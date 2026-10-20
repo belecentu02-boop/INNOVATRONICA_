@@ -4,7 +4,21 @@
  * Módulo de Autenticación, Control de Acceso y Seguridad
  */
 
+// Prevenir acceso directo al archivo desde el navegador
+if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) {
+    http_response_code(403);
+    exit('Acceso directo prohibido.');
+}
+
 require_once __DIR__ . '/../config/db.php';
+
+// Encabezados HTTP de seguridad defensiva
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('X-XSS-Protection: 1; mode=block');
+}
 
 // Iniciar sesión segura si no está activa
 if (session_status() === PHP_SESSION_NONE) {
@@ -106,10 +120,10 @@ function requerir_rol(array $roles_permitidos): void {
         echo '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>403 Prohibido</title>'
            . '<link rel="stylesheet" href="assets/css/style.css"></head>'
            . '<body style="display:grid;place-items:center;min-height:100vh;">'
-           . '<div class="card" style="text-align:center;">'
-           . '<h2 style="color:var(--danger);">Acceso Denegado (403)</h2>'
+           . '<div class="login-card" style="text-align:center;">'
+           . '<h2 style="color:var(--danger);margin-bottom:0.75rem;">Acceso Denegado (403)</h2>'
            . '<p>Tu rol (<strong>' . h($rolActual) . '</strong>) no tiene autorización para acceder a este módulo.</p>'
-           . '<a href="index.php" class="btn" style="margin-top:1rem;display:inline-block;">Volver al inicio</a>'
+           . '<a href="index.php" class="btn btn-primary" style="margin-top:1.25rem;display:inline-block;">Volver al inicio</a>'
            . '</div></body></html>';
         exit;
     }
