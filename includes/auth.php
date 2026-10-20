@@ -97,6 +97,30 @@ function es_vendedor(): bool {
 }
 
 /**
+ * Obtener la clase CSS del badge correspondiente al rol.
+ */
+function rol_badge_class(?string $rol = null): string {
+    $r = $rol ?? ($_SESSION['u']['rol'] ?? '');
+    switch ($r) {
+        case 'ADMIN': return 'badge-admin';
+        case 'SUPERVISOR_COMERCIAL': return 'badge-supervisor';
+        default: return 'badge-vendedor';
+    }
+}
+
+/**
+ * Obtener la etiqueta legible correspondiente al rol.
+ */
+function rol_label(?string $rol = null): string {
+    $r = $rol ?? ($_SESSION['u']['rol'] ?? '');
+    switch ($r) {
+        case 'ADMIN': return 'Administrador General';
+        case 'SUPERVISOR_COMERCIAL': return 'Supervisor Comercial';
+        default: return 'Vendedor Interno';
+    }
+}
+
+/**
  * Redirigir al login si el usuario no tiene una sesión activa.
  */
 function requerir_login(): void {
