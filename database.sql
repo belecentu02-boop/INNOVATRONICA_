@@ -1,7 +1,14 @@
 -- ============================================================
 -- Base de Datos: Innovatrónica S.A. - Sistema de Control de Stock
--- Archivo: database.sql (Fase 1)
+-- Archivo: database.sql (Fase 1 - instalación inicial)
 -- Zona horaria: America/Argentina/Buenos_Aires (-03:00)
+--
+-- IMPORTANTE:
+-- Este script es solo para una instalación inicial en una base vacía.
+-- No lo ejecutes como mecanismo de actualización/migración.
+-- No elimina tablas existentes; si ya existen, MySQL detendrá el script
+-- al intentar crearlas. Para cambios sobre una instalación existente,
+-- utiliza migraciones revisadas y una copia de seguridad previa.
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS innovatronica 
@@ -9,18 +16,6 @@ CREATE DATABASE IF NOT EXISTS innovatronica
   COLLATE utf8mb4_unicode_ci;
 
 USE innovatronica;
-
--- Desactivar temporalmente revisión de claves foráneas para recreación limpia
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS log_acciones;
-DROP TABLE IF EXISTS movimientos_stock;
-DROP TABLE IF EXISTS reservas;
-DROP TABLE IF EXISTS inventario;
-DROP TABLE IF EXISTS productos;
-DROP TABLE IF EXISTS usuarios;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- ------------------------------------------------------------
 -- 1. Tabla de Usuarios (Soporte para 3 Roles y Bloqueo de Intentos)
