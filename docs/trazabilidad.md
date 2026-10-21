@@ -1,7 +1,7 @@
 # Matriz de Trazabilidad de Requisitos - Innovatrónica S.A.
 
-> **Fecha de generación:** 2026-10-20  
-> **Fase actual cerrada:** Fase 1 (Base de datos, configuración y login con 3 roles)  
+> **Fecha de revisión:** 2026-10-21  
+> **Estado actual:** Fase 3.5 (estabilización y seguridad) en curso. Los estados históricos de esta matriz requieren revalidación con pruebas ejecutadas.  
 > **Skill aplicada:** `verificador-requisitos`  
 > **Fuentes (en orden de prioridad):**  
 > 1. `docs/decisiones.md` (Fuente de verdad prevaleciente)  
@@ -35,7 +35,7 @@
 | **R19** | No se puede reservar más que el Stock Disponible (concurrencia) | `decisiones.md` (Sec. 6, 7) | ⏳ Fase futura | N/A en Fase 1/3. | N/A en Fase 1/3. | Bloqueo de fila `SELECT ... FOR UPDATE` dentro de transacción en Fase 5. |
 | **R20** | Facturar descuenta el Stock Físico y registra el movimiento | `decisiones.md` (Sec. 5, 6) | ⏳ Fase futura | [database.sql](file:///c:/wamp64/www/Innovatrónica/database.sql#L98-L111): tabla `movimientos_stock`. | N/A en Fase 1/3. | Flujo de facturación y despacho corresponde a Fase 6. |
 | **R21** | Registro en `movimientos_stock` y `log_acciones` | `decisiones.md` (Sec. 9, 15) | ✅ Cumple | [database.sql](file:///c:/wamp64/www/Innovatrónica/database.sql#L98-L123), [api.php](file:///c:/wamp64/www/Innovatrónica/api.php), [includes/auth.php](file:///c:/wamp64/www/Innovatrónica/includes/auth.php). | Comprobado registro en vivo de `ALTA_USUARIO`, `EDICION_USUARIO`, `ACTIVAR_USUARIO`, `DESACTIVAR_USUARIO`, `RESETEO_PASSWORD` y `LOGIN_BLOQUEADO`. | `log_acciones` operativo y auditando todas las acciones de usuarios; `movimientos_stock` estructurada para Fases 4 y 6. |
-| **R22** | Seguridad mínima de `docs/decisiones.md` sección 8 y 15 | `decisiones.md` (Sec. 8, 15) | ✅ Cumple | [config/db.php](file:///c:/wamp64/www/Innovatrónica/config/db.php), [includes/auth.php](file:///c:/wamp64/www/Innovatrónica/includes/auth.php), [login.php](file:///c:/wamp64/www/Innovatrónica/login.php), [api.php](file:///c:/wamp64/www/Innovatrónica/api.php). | PDO preparado, BCRYPT, CSRF, rechazo de login inactivo, invalidación de sesión activa en tiempo real, modales propios. | Verificado con pruebas integrales. |
+| **R22** | Seguridad mínima de `docs/decisiones.md` sección 8 y 15 | `decisiones.md` (Sec. 8, 15) | 🟡 Revisión pendiente | [config/db.php](file:///c:/wamp64/www/Innovatrónica/config/db.php), [includes/auth.php](file:///c:/wamp64/www/Innovatrónica/includes/auth.php), [login.php](file:///c:/wamp64/www/Innovatrónica/login.php), [api.php](file:///c:/wamp64/www/Innovatrónica/api.php). | Revisión estática; las pruebas integrales deben volver a ejecutarse después de las correcciones de la Fase 3.5. | No declarar la seguridad cerrada hasta contar con evidencia de pruebas dinámicas. |
 
 ---
 
@@ -67,9 +67,9 @@
 
 ---
 
-## 4. Lista de Faltantes Priorizada para la Próxima Fase (Fase 2)
+## 4. Próximo trabajo
 
-De acuerdo con el plan de trabajo y las reglas de negocio, la siguiente etapa es la **Fase 2: Dashboard y Ambiente de Trabajo Diferenciado por Rol**:
+Antes de avanzar con nuevas funcionalidades, la prioridad es cerrar la **Fase 3.5: estabilización y seguridad**. La revisión anterior fue estática y las pruebas heredadas de esta matriz deben repetirse. Una vez verificada esta fase, se continuará con los módulos de negocio pendientes según `docs/implementation_plan.md`.
 
 1. **Header y Navegación Dinámica (`includes/header.php`):**
    - Adaptar el menú según el rol autenticado:
