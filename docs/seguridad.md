@@ -41,6 +41,8 @@
 | `migracion_fase3_1_debe_cambiar_password.sql` | Fallo si la columna ya existe y riesgo de conservar claves semilla conocidas | **Alta** | **Mitigación aplicada; prueba SQL pendiente** | La migración comprueba la existencia de la columna antes de alterar el esquema y marca para cambio obligatorio las cuentas que conservan los hashes semilla conocidos. Debe probarse en una base desechable con y sin la columna. |
 | `api.php` | Colisión de códigos de empleado en altas concurrentes | **Media** | **Mitigación aplicada; prueba concurrente pendiente** | La generación se serializa con un bloqueo nominal MySQL y se libera en `finally`; el índice `UNIQUE` de `codigo_empleado` se mantiene como defensa final. Probar altas simultáneas en el entorno local. |
 | `database.sql` | Las reservas vencidas no dejaban un evento individual de auditoría | **Media** | **Mitigación aplicada; prueba SQL pendiente** | El evento llama a un procedimiento que cambia cada reserva vencida y registra `RESERVA_EXPIRADA` en la misma transacción. Verificarlo con `event_scheduler` habilitado en una base desechable. |
+| `cambiar_password.php` | La excepción general podía revelar detalles internos al usuario | **Media** | **Mitigación aplicada; prueba pendiente** | El mensaje visible ahora es genérico y el detalle técnico queda solo en `error_log`. |
+| `api.php` | Las acciones administrativas podían quedar atribuidas al usuario objetivo en vez del administrador que las ejecutó | **Media** | **Mitigación aplicada; prueba de auditoría pendiente** | Los eventos de alta, edición, activación/desactivación y reseteo de contraseña usan el ID del administrador autenticado como actor; el objetivo queda descrito en el detalle. |
 
 ---
 
@@ -75,6 +77,8 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 - Base de datos: se retiraron las instrucciones `DROP TABLE` de `database.sql`; falta probar la instalación en una base vacía y comprobar que ante tablas existentes se detenga sin borrar datos.
 - Concurrencia: probar altas simultáneas y confirmar que los códigos generados son únicos.
 - Expiración: en una base descartable, forzar el vencimiento de una reserva y comprobar tanto el cambio de estado como la fila `RESERVA_EXPIRADA` en `log_acciones`.
+- Auditoría de usuarios: ejecutar altas, ediciones, activaciones/desactivaciones y reseteos con un administrador de prueba; confirmar que `log_acciones.id_empleado` identifica al administrador actor y no al usuario objetivo.
+- Cambio de contraseña: provocar un error controlado y confirmar que la interfaz muestra un mensaje genérico, sin detalles de la excepción.
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
