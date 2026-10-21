@@ -6,9 +6,13 @@
 
 require_once __DIR__ . '/includes/auth.php';
 
-// Si ya tiene sesión activa, redirigir a index.php
+// Si ya tiene sesión activa, redirigir según estado de cambio obligatorio
 if (esta_autenticado()) {
-    header('Location: index.php');
+    if (debe_cambiar_password_actual()) {
+        header('Location: cambiar_password.php');
+    } else {
+        header('Location: index.php');
+    }
     exit;
 }
 
@@ -32,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 $pdo = db();
-                $st = $pdo->prepare('SELECT id_empleado, codigo_empleado, nombre, usuario, password_hash, rol, activo, intentos_fallidos, bloqueado_hasta FROM usuarios WHERE usuario = ?');
+                $st = $pdo->prepare('SELECT id_empleado, codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password, intentos_fallidos, bloqueado_hasta FROM usuarios WHERE usuario = ?');
                 $st->execute([$usuario_val]);
                 $u = $st->fetch();
 
@@ -76,7 +80,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Registrar acción en log de auditoría
                             registrar_log('LOGIN_EXITOSO', 'Inicio de sesión exitoso con rol ' . $u['rol'], (int)$u['id_empleado']);
 
-                            header('Location: index.php');
+                            // Si debe cambiar la contraseña, forzar destino a cambiar_password.php
+                            if ((int)($u['debe_cambiar_password'] ?? 0) === 1) {
+                                header('Location: cambiar_password.php');
+                            } else {
+                                header('Location: index.php');
+                            }
                             exit;
                         } else {
                             // Password incorrecto: registrar intento fallido

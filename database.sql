@@ -33,6 +33,7 @@ CREATE TABLE usuarios (
   password_hash VARCHAR(255) NOT NULL,
   rol ENUM('VENDEDOR_INTERNO', 'SUPERVISOR_COMERCIAL', 'ADMIN') NOT NULL,
   activo TINYINT(1) NOT NULL DEFAULT 1,
+  debe_cambiar_password TINYINT(1) NOT NULL DEFAULT 0,
   intentos_fallidos INT NOT NULL DEFAULT 0,
   bloqueado_hasta DATETIME NULL,
   creado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -145,10 +146,10 @@ DELIMITER ;
 -- 1. admin / admin123 (ADMIN)
 -- 2. supervisor / supervisor123 (SUPERVISOR_COMERCIAL)
 -- 3. vendedor / vendedor123 (VENDEDOR_INTERNO)
-INSERT INTO usuarios (id_empleado, codigo_empleado, nombre, usuario, password_hash, rol, activo) VALUES
-(1, 'EMP-001', 'Administrador General', 'admin', '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK', 'ADMIN', 1),
-(2, 'EMP-002', 'Supervisor Comercial Demo', 'supervisor', '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e', 'SUPERVISOR_COMERCIAL', 1),
-(3, 'EMP-003', 'Vendedor Interno Demo', 'vendedor', '$2y$10$EpLSEGLHIurm0BfQtoWo9.9imkGCLBJOQ9vGtc8ClbpGXd.glz85u', 'VENDEDOR_INTERNO', 1);
+INSERT INTO usuarios (id_empleado, codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password) VALUES
+(1, 'EMP-001', 'Administrador General', 'admin', '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK', 'ADMIN', 1, 0),
+(2, 'EMP-002', 'Supervisor Comercial Demo', 'supervisor', '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e', 'SUPERVISOR_COMERCIAL', 1, 0),
+(3, 'EMP-003', 'Vendedor Interno Demo', 'vendedor', '$2y$10$EpLSEGLHIurm0BfQtoWo9.9imkGCLBJOQ9vGtc8ClbpGXd.glz85u', 'VENDEDOR_INTERNO', 1, 0);
 
 -- 18 Componentes Electrónicos con SKU Realista, Ubicación y Ficha Técnica
 INSERT INTO productos (sku, nombre, categoria, ficha_tecnica, ubicacion_deposito) VALUES

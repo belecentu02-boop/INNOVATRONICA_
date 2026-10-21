@@ -25,7 +25,18 @@ if (!esta_autenticado() || !verificar_sesion_activa()) {
     exit;
 }
 
-// 2. Verificación estricta de rol ADMIN (backend)
+// 2. Verificación de cambio de contraseña obligatorio (decisiones.md secc. 16)
+if (debe_cambiar_password_actual()) {
+    http_response_code(403);
+    echo json_encode([
+        'ok'     => false,
+        'error'  => 'Debe cambiar su contraseña antes de realizar cualquier operación en el sistema.',
+        'codigo' => 'PASSWORD_CHANGE_REQUIRED'
+    ], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
+// 3. Verificación estricta de rol ADMIN (backend)
 if (!es_admin()) {
     http_response_code(403);
     echo json_encode([
@@ -80,6 +91,7 @@ try {
                     usuario,
                     rol,
                     activo,
+                    debe_cambiar_password,
                     DATE_FORMAT(creado_en, '%d/%m/%Y %H:%i') AS creado_en,
                     DATE_FORMAT(actualizado_en, '%d/%m/%Y %H:%i') AS actualizado_en
                 FROM usuarios 
@@ -163,10 +175,10 @@ try {
             // Cifrado seguro de contraseña
             $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-            // Inserción en la base de datos
+            // Inserción en la base de datos (con cambio de clave obligatorio = 1)
             $stIns = $pdo->prepare('
-                INSERT INTO usuarios (codigo_empleado, nombre, usuario, password_hash, rol, activo) 
-                VALUES (?, ?, ?, ?, ?, 1)
+                INSERT INTO usuarios (codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password) 
+                VALUES (?, ?, ?, ?, ?, 1, 1)
             ');
             $stIns->execute([$codigo_empleado, $nombre, $usuario, $password_hash, $rol]);
             $nuevo_id = (int)$pdo->lastInsertId();
@@ -369,10 +381,10 @@ try {
 
             $nuevo_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
 
-            // Al resetear la contraseña, desbloquear y reiniciar intentos fallidos
+            // Al resetear la contraseña, marcar cambio obligatorio (debe_cambiar_password = 1), desbloquear y reiniciar intentos fallidos
             $stUpd = $pdo->prepare('
                 UPDATE usuarios 
-                SET password_hash = ?, intentos_fallidos = 0, bloqueado_hasta = NULL 
+                SET password_hash = ?, debe_cambiar_password = 1, intentos_fallidos = 0, bloqueado_hasta = NULL 
                 WHERE id_empleado = ?
             ');
             $stUpd->execute([$nuevo_hash, $id_empleado]);

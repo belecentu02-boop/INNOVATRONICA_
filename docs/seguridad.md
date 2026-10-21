@@ -30,29 +30,35 @@
 | `api.php` | Escalada de privilegios creando administradores desde la interfaz | **Alta** | **Corregido** | Validación en backend que limita la creación exclusivamente a `VENDEDOR_INTERNO` y `SUPERVISOR_COMERCIAL` (decisiones.md secc. 15). |
 | `api.php` | Auto-desactivación o auto-degradación de rol del Administrador | **Alta** | **Corregido** | Comprobación defensiva contra `$_SESSION['u']['id_empleado']` que rechaza cualquier intento de auto-bloqueo o pérdida de rol ADMIN. |
 | `api.php` | Reseteo inseguro de contraseñas o contraseñas débiles | **Alta** | **Corregido** | Validación de longitud mínima (8 caracteres), cifrado con `password_hash(..., PASSWORD_DEFAULT)` y registro en `log_acciones` sin almacenar claves en texto plano. |
+| `includes/auth.php` | Evasión de cambio obligatorio de contraseña en vistas web | **Alta** | **Corregido** | Lectura en tiempo real de `debe_cambiar_password` desde BD en `requerir_login()`; forzar redirección a `cambiar_password.php` permitiendo únicamente `logout.php` (decisiones.md secc. 16). |
+| `api.php` | Evasión de cambio obligatorio de contraseña consumiendo la API interna | **Alta** | **Corregido** | Guardia previa a chequeos de rol que retorna HTTP 403 con código JSON `PASSWORD_CHANGE_REQUIRED` si `debe_cambiar_password == 1`. |
+| `api.php` | Creación y reseteo de usuarios sin forzar cambio de credencial temporal | **Alta** | **Corregido** | Parámetro `debe_cambiar_password = 1` grabado mandatoriamente en `crear_usuario` y `reset_password`. |
+| `cambiar_password.php` | Ataques de fuerza bruta sobre la contraseña actual en el formulario de cambio | **Alta** | **Corregido** | Límite de 5 intentos fallidos consecutivos en `password_actual`; al quinto fallo se bloquea temporalmente por 15 minutos en BD (`bloqueado_hasta`). |
+| `cambiar_password.php` | Reutilización de contraseña actual o contraseñas débiles | **Media** | **Corregido** | Validación de longitud mínima (8 caracteres) y rechazo si la nueva contraseña es idéntica a la actual (`password_verify`). |
+| `cambiar_password.php` | Falsificación de petición (CSRF) y fijación de sesión tras cambio de clave | **Alta** | **Corregido** | Token CSRF mandatorio verificado con `hash_equals()`; regeneración de sesión obligatoria con `session_regenerate_id(true)` tras el cambio exitoso. |
 
 ---
 
 ## 2. Verificación de Búsquedas Rápidas (Checklist de la Skill)
 
 1. **SQL Concatenado:**
-   - Se auditó cada consulta en `api.php`, `usuarios.php`, `includes/auth.php` y `login.php`.
+   - Se auditó cada consulta en `api.php`, `usuarios.php`, `includes/auth.php`, `login.php` y `cambiar_password.php`.
    - **100% de las consultas utilizan sentencias preparadas con PDO** (`$pdo->prepare(...)` con parámetros posicionales `?`).
    - Ninguna variable se concatena directamente en sentencias SQL.
 2. **Salidas sin escapar (Prevención XSS):**
-   - En `usuarios.php`, toda salida dinámica PHP pasa por `h()` o casteo a entero `(int)`.
-   - En el código JavaScript de `usuarios.php`, no se inyectan variables crudas con `innerHTML`: se usa `textContent` y funciones de escape seguras (`escapeHtml()`).
-3. **Endpoints y vistas sin chequeo de rol:**
-   - `usuarios.php` ejecuta `requerir_rol(['ADMIN'])` en la línea 11.
-   - `api.php` ejecuta `if (!es_admin())` con respuesta 403 JSON en la línea 30.
-   - Todo intento no autorizado es bloqueado en el servidor.
+   - En `usuarios.php`, `cambiar_password.php`, `login.php` e `index.php`, toda salida dinámica PHP pasa por `h()` o casteo a entero `(int)`.
+   - En el código JavaScript de `usuarios.php` y `cambiar_password.php`, no se inyectan variables crudas con `innerHTML`: se usa `textContent` y sanitización DOM.
+3. **Endpoints y vistas sin chequeo de rol o estado:**
+   - `usuarios.php` ejecuta `requerir_rol(['ADMIN'])` en el backend.
+   - `api.php` comprueba `debe_cambiar_password_actual()` (403 PASSWORD_CHANGE_REQUIRED) y `es_admin()`.
+   - `includes/auth.php` redirige de inmediato a `cambiar_password.php` si el cambio es obligatorio.
 4. **Registro de Auditoría (Trazabilidad):**
-   - Cada operación de alta (`ALTA_USUARIO`), edición (`EDICION_USUARIO`), activación/desactivación (`ACTIVAR_USUARIO`/`DESACTIVAR_USUARIO`), reseteo de clave (`RESETEO_PASSWORD`) y login bloqueado (`LOGIN_BLOQUEADO`) queda registrada en `log_acciones` con IP y timestamp.
+   - Cada operación de alta (`ALTA_USUARIO`), edición (`EDICION_USUARIO`), activación/desactivación (`ACTIVAR_USUARIO`/`DESACTIVAR_USUARIO`), reseteo de clave (`RESETEO_PASSWORD`), cambio de clave (`CAMBIO_PASSWORD`), fallo de cambio (`PASSWORD_CAMBIO_FALLIDO`) y bloqueo temporal (`CUENTA_BLOQUEADA`) queda registrada en `log_acciones` con IP y timestamp.
 
 ---
 
 ## 3. Conclusión de la Auditoría
 
-Todos los requisitos de seguridad de las **Fases 1 y 3** estipulados en `docs/decisiones.md` (Secciones 3, 7, 8 y 15) y en la skill `seguridad-php` se encuentran **100% implementados, mitigados y verificados**.
-No se registran problemas de gravedad alta, media o baja pendientes en el código de la Fase 3.
+Todos los requisitos de seguridad de las **Fases 1, 3 y 3.1** estipulados en `docs/decisiones.md` (Secciones 3, 7, 8, 15 y 16) y en la skill `seguridad-php` se encuentran **100% implementados, mitigados y verificados**.
+No se registran problemas de gravedad alta, media o baja pendientes en el alcance del sistema.
 

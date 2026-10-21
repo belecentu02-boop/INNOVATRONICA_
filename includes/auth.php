@@ -143,26 +143,55 @@ function destruir_sesion(): void {
 }
 
 /**
- * Comprobar en tiempo real si el usuario autenticado continúa activo en la BD.
+ * Consultar en tiempo real el estado actual del usuario en la base de datos (activo y debe_cambiar_password).
+ * Se lee directamente de la base en cada petición (decisiones.md secc. 16) para que los cambios aplicados
+ * por el Administrador surtan efecto inmediato sin depender exclusivamente de los datos de sesión.
  */
-function verificar_sesion_activa(): bool {
+function obtener_estado_usuario_db(bool $forzar_refresco = false): ?array {
+    static $estado_cache = null;
+    if ($forzar_refresco) {
+        $estado_cache = null;
+    }
+    if ($estado_cache !== null) {
+        return $estado_cache;
+    }
     if (!esta_autenticado()) {
-        return false;
+        return null;
     }
     try {
         $pdo = db();
-        $st = $pdo->prepare('SELECT activo FROM usuarios WHERE id_empleado = ? LIMIT 1');
+        $st = $pdo->prepare('SELECT activo, debe_cambiar_password FROM usuarios WHERE id_empleado = ? LIMIT 1');
         $st->execute([(int)$_SESSION['u']['id_empleado']]);
-        $activo = $st->fetchColumn();
-        return ($activo !== false && (int)$activo === 1);
+        $row = $st->fetch(PDO::FETCH_ASSOC);
+        $estado_cache = $row ?: null;
+        return $estado_cache;
     } catch (Exception $e) {
-        error_log('Error al verificar sesión activa: ' . $e->getMessage());
-        return false;
+        error_log('Error al verificar estado de usuario en BD: ' . $e->getMessage());
+        return null;
     }
 }
 
 /**
+ * Comprobar en tiempo real si el usuario autenticado continúa activo en la BD.
+ */
+function verificar_sesion_activa(): bool {
+    $estado = obtener_estado_usuario_db();
+    return ($estado !== null && (int)$estado['activo'] === 1);
+}
+
+/**
+ * Comprobar en tiempo real si el usuario autenticado tiene pendiente el cambio obligatorio de contraseña.
+ * Retorna true mientras la columna debe_cambiar_password sea 1 en la base de datos.
+ */
+function debe_cambiar_password_actual(): bool {
+    $estado = obtener_estado_usuario_db();
+    return ($estado !== null && (int)($estado['debe_cambiar_password'] ?? 0) === 1);
+}
+
+/**
  * Redirigir al login si el usuario no tiene una sesión activa o si fue desactivado.
+ * Además, si debe_cambiar_password está en 1, el usuario solo puede acceder a cambiar_password.php
+ * y a logout.php; todo lo demás redirige forzosamente allí (decisiones.md secc. 16).
  */
 function requerir_login(): void {
     if (!esta_autenticado()) {
@@ -173,6 +202,13 @@ function requerir_login(): void {
         destruir_sesion();
         header('Location: login.php?error=desactivado');
         exit;
+    }
+    if (debe_cambiar_password_actual()) {
+        $script_actual = basename($_SERVER['SCRIPT_FILENAME'] ?? '');
+        if ($script_actual !== 'cambiar_password.php' && $script_actual !== 'logout.php') {
+            header('Location: cambiar_password.php');
+            exit;
+        }
     }
 }
 

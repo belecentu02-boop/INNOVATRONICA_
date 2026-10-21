@@ -180,3 +180,22 @@ El detalle de cada fase está en `implementation_plan.md`, salvo donde este docu
 - Edición permitida: nombre, rol y estado. Reseteo de contraseña por el Admin.
 - Cada alta, edición, desactivación y reseteo se registra en log_acciones.
 - Confirmaciones con modales propios, no con confirm().
+
+## 16. Cambio de contraseña obligatorio (Fase 3.1)
+
+- Columna `debe_cambiar_password` (TINYINT, default 0) en `usuarios`.
+  Se pone en 1 cuando el Admin crea un usuario o le resetea la contraseña.
+- Mientras esté en 1, el usuario solo puede acceder a `cambiar_password.php`
+  y a `logout.php`. Todo lo demás redirige ahí.
+- La restricción se aplica TAMBIÉN a `api.php`: las peticiones devuelven
+  error 403 con el código PASSWORD_CHANGE_REQUIRED.
+- El estado se lee de la base en cada petición (no solo de la sesión),
+  para que un reseteo hecho por el Admin surta efecto de inmediato.
+- Pantalla `cambiar_password.php`: contraseña actual, nueva y confirmación.
+  Mínimo 8 caracteres, distinta de la actual, con token CSRF.
+- La contraseña actual cuenta para el límite de intentos fallidos.
+- Al cambiarla: nuevo `password_hash`, `debe_cambiar_password = 0`,
+  `session_regenerate_id(true)` y registro en `log_acciones`.
+- Cualquier usuario puede cambiar su contraseña voluntariamente
+  desde el menú.
+- Los usuarios semilla de desarrollo quedan en 0.

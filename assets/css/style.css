@@ -1415,3 +1415,333 @@ body {
   color: var(--text-muted);
   margin-top: 0.2rem;
 }
+
+/* ============================================================
+   Menú Desplegable de Cuenta (ui-ux-innovatronica)
+   ============================================================ */
+.user-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.user-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.user-menu-trigger:hover,
+.user-menu-trigger[aria-expanded="true"] {
+  background: var(--bg-muted);
+  border-color: var(--border-color);
+}
+
+.user-avatar-initials {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(217, 119, 6, 0.25);
+  flex-shrink: 0;
+}
+
+.chevron-icon {
+  color: var(--text-muted);
+  transition: transform 0.2s ease;
+}
+
+.user-menu-trigger[aria-expanded="true"] .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 240px;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  z-index: 1000;
+  display: none;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.user-dropdown-menu.is-open {
+  display: block;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-dropdown-header {
+  padding: 0.85rem 1rem;
+  background: var(--bg-muted);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-dropdown-header-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.user-dropdown-header-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background: var(--border-light);
+  margin: 0.35rem 0;
+}
+
+.user-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem;
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.12s ease;
+}
+
+.user-dropdown-item:hover {
+  background: var(--bg-muted);
+  color: var(--primary);
+}
+
+.user-dropdown-item.active {
+  background: #fffbeb;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.user-dropdown-item-danger {
+  color: var(--danger);
+}
+
+.user-dropdown-item-danger:hover {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+/* Banner de cambio de contraseña obligatorio en cabecera */
+.mandatory-pwd-banner {
+  background: #fffbeb;
+  border-bottom: 1px solid #fde68a;
+  padding: 0.65rem 2rem;
+  color: #92400e;
+  font-size: 0.85rem;
+}
+
+.mandatory-pwd-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+}
+
+.mandatory-pwd-banner-icon {
+  display: inline-flex;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Pantalla y Tarjeta de Cambio de Contraseña (Fase 3.1)
+   ============================================================ */
+.pwd-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 2.25rem;
+}
+
+.pwd-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.pwd-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pwd-icon-warning {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.pwd-icon-primary {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #fcd34d;
+}
+
+.pwd-card-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.pwd-card-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.pwd-user-meta-box {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.pwd-meta-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: block;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.15rem;
+}
+
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-password-wrapper .form-input {
+  padding-right: 2.75rem;
+}
+
+.btn-toggle-eye {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-toggle-eye:hover {
+  color: var(--text-main);
+  background: var(--bg-muted);
+}
+
+.btn-toggle-eye.active {
+  color: var(--primary);
+}
+
+.pwd-requirements-card {
+  background: var(--bg-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+  margin-bottom: 1.75rem;
+}
+
+.pwd-requirements-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+}
+
+.pwd-requirements-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.pwd-requirements-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: color 0.15s ease;
+}
+
+.pwd-requirements-list li.valid {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.pwd-requirements-list li.valid .req-bullet {
+  color: var(--success);
+}
+
+.req-bullet {
+  font-size: 0.65rem;
+  color: var(--text-light);
+}
+
+.pwd-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

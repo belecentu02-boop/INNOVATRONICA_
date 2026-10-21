@@ -129,3 +129,8 @@ After generating a complete design system:
 1. **CSS Variables**: Immediately translate the color palette and typography into standard CSS Custom Properties (e.g., `:root { --primary: #3B82F6; }`) in the project's global stylesheet.
 2. **Component Abstraction**: Identify the recurring patterns (e.g., "Glassmorphism Card") and build a reusable component rather than applying utility classes repeatedly across files.
 3. **Theme Overrides**: If the user project supports dark mode, ensure you generate the inverted palette explicitly under a `@media (prefers-color-scheme: dark)` or `.dark` class block.
+
+## CUENTAS
+- Las acciones de cuenta (cambiar contraseña, cerrar sesión) van en un menú
+  de usuario desplegable, nunca como botones sueltos en la cabecera.
+- Iconos con SVG en línea. No usar emojis como iconos de interfaz.

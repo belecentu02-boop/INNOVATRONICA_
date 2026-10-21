@@ -24,6 +24,7 @@ $stmtUsers = $pdo->query("
         usuario,
         rol,
         activo,
+        debe_cambiar_password,
         DATE_FORMAT(creado_en, '%d/%m/%Y %H:%i') AS creado_en
     FROM usuarios 
     ORDER BY id_empleado ASC
@@ -185,6 +186,7 @@ require_once __DIR__ . '/includes/header.php';
           <?php foreach ($usuarios as $usr): 
             $es_propio = ((int)$usr['id_empleado'] === $current_admin_id);
             $es_activo = ((int)$usr['activo'] === 1);
+            $debe_cambiar = ((int)($usr['debe_cambiar_password'] ?? 0) === 1);
           ?>
             <tr 
               data-id="<?= (int)$usr['id_empleado'] ?>"
@@ -193,6 +195,7 @@ require_once __DIR__ . '/includes/header.php';
               data-usuario="<?= h($usr['usuario']) ?>"
               data-rol="<?= h($usr['rol']) ?>"
               data-activo="<?= $es_activo ? '1' : '0' ?>"
+              data-debe-cambiar="<?= $debe_cambiar ? '1' : '0' ?>"
             >
               <td>
                 <span class="emp-code-badge">
@@ -229,6 +232,13 @@ require_once __DIR__ . '/includes/header.php';
                     <span class="status-dot"></span>
                     <span>Inactivo</span>
                   </span>
+                <?php endif; ?>
+                <?php if ($debe_cambiar): ?>
+                  <div style="margin-top: 0.35rem;">
+                    <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;" title="El empleado tiene pendiente el cambio de contraseña obligatorio">
+                      <span>⚠️ Clave pendiente</span>
+                    </span>
+                  </div>
                 <?php endif; ?>
               </td>
 
@@ -1084,9 +1094,14 @@ require_once __DIR__ . '/includes/header.php';
         `;
 
         const tdEstado = document.createElement('td');
-        tdEstado.innerHTML = isActivo
+        const debeCambiar = (parseInt(u.debe_cambiar_password, 10) === 1);
+        let estadoHtml = isActivo
           ? `<span class="badge-status badge-status-active"><span class="status-dot"></span><span>Activo</span></span>`
           : `<span class="badge-status badge-status-inactive"><span class="status-dot"></span><span>Inactivo</span></span>`;
+        if (debeCambiar) {
+          estadoHtml += `<div style="margin-top: 0.35rem;"><span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;" title="El empleado tiene pendiente el cambio de contraseña obligatorio"><span>⚠️ Clave pendiente</span></span></div>`;
+        }
+        tdEstado.innerHTML = estadoHtml;
 
         const tdFecha = document.createElement('td');
         tdFecha.style.color = 'var(--text-muted)';
