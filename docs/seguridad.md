@@ -70,7 +70,7 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 - API: una excepción simulada debe generar respuesta genérica para el cliente y conservar detalles únicamente en el log del servidor.
 - Login: no deben aparecer credenciales en la interfaz; las cuentas semilla que aún conservan hashes conocidos deben exigir cambio de contraseña.
 - Migración: probar en una base descartable tanto con la columna ausente como con la columna existente.
-- Base de datos: `database.sql` aún contiene instrucciones `DROP TABLE`; no debe ejecutarse sobre una base con datos que se quieran conservar.
+- Base de datos: se retiraron las instrucciones `DROP TABLE` de `database.sql`; falta probar la instalación en una base vacía y comprobar que ante tablas existentes se detenga sin borrar datos.
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
