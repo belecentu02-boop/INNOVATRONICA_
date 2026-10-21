@@ -32,7 +32,7 @@ UPDATE usuarios
 SET debe_cambiar_password = 1
 WHERE (usuario = 'admin' AND password_hash = '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK')
    OR (usuario = 'supervisor' AND password_hash = '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e')
-   OR (usuario = 'vendedor' AND password_hash = '$2y$10$EpLSEGLHIurm0B2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK');
+   OR (usuario = 'vendedor' AND password_hash = '$2y$10$EpLSEGLHIurm0B2FtoWo9.9imkGCLBJOQ9vGtc8ClbpGXd.glz85u');
 
 -- Registrar la migración una sola vez, cuando realmente se agregó la columna.
 INSERT INTO log_acciones (id_empleado, accion, detalles, ip)
