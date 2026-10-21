@@ -25,12 +25,14 @@ PREPARE stmt_migracion FROM @sql_migracion;
 EXECUTE stmt_migracion;
 DEALLOCATE PREPARE stmt_migracion;
 
--- Solo inicializar las cuentas de desarrollo si esta ejecución creó la columna.
--- Se exige cambio de contraseña para evitar conservar credenciales conocidas.
+-- Exigir cambio a cuentas que aún conservan los hashes de las credenciales
+-- conocidas incluidas originalmente en los datos semilla. Tras cambiar la clave,
+-- el hash cambia y una ejecución posterior no vuelve a marcar la cuenta.
 UPDATE usuarios
 SET debe_cambiar_password = 1
-WHERE @columna_existe = 0
-  AND usuario IN ('admin', 'supervisor', 'vendedor');
+WHERE (usuario = 'admin' AND password_hash = '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK')
+   OR (usuario = 'supervisor' AND password_hash = '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e')
+   OR (usuario = 'vendedor' AND password_hash = '$2y$10$EpLSEGLHIurm0B2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK');
 
 -- Registrar la migración una sola vez, cuando realmente se agregó la columna.
 INSERT INTO log_acciones (id_empleado, accion, detalles, ip)
