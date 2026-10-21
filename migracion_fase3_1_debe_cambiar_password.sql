@@ -36,7 +36,7 @@ WHERE (usuario = 'admin' AND password_hash = '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//th
 
 -- Registrar la migración una sola vez, cuando realmente se agregó la columna.
 INSERT INTO log_acciones (id_empleado, accion, detalles, ip)
-SELECT 1, 'MIGRACION_ESQUEMA',
+SELECT NULL, 'MIGRACION_ESQUEMA',
        'Aplicada migración Fase 3.1: columna debe_cambiar_password en usuarios',
        '127.0.0.1'
 WHERE @columna_existe = 0;
