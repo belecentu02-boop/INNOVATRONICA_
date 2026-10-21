@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'Ocurrió un error al procesar el cambio de contraseña. Por favor intente nuevamente.';
             } catch (Exception $e) {
                 error_log('Error en cambiar_password.php: ' . $e->getMessage());
-                $error = 'Error del sistema: ' . $e->getMessage();
+                $error = 'Ocurrió un error al procesar el cambio de contraseña. Por favor intente nuevamente.';
             }
         }
     }
