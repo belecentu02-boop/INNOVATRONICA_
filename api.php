@@ -211,7 +211,7 @@ try {
             registrar_log(
                 'ALTA_USUARIO',
                 "Alta de empleado {$codigo_empleado} ('{$usuario}', rol: {$rol}) por Administrador",
-                $nuevo_id
+                $current_admin_id
             );
 
             echo json_encode([
@@ -301,7 +301,7 @@ try {
                 $rol,
                 $activo
             );
-            registrar_log('EDICION_USUARIO', $detalles, $id_empleado);
+            registrar_log('EDICION_USUARIO', $detalles, $current_admin_id);
 
             echo json_encode([
                 'ok'      => true,
@@ -357,7 +357,7 @@ try {
                 $u['usuario'],
                 ($nuevo_activo === 0 ? 'Sesión invalidada para próximas peticiones.' : '')
             );
-            registrar_log($accion_log, $detalle_log, $id_empleado);
+            registrar_log($accion_log, $detalle_log, $current_admin_id);
 
             echo json_encode([
                 'ok'      => true,
@@ -417,7 +417,7 @@ try {
             registrar_log(
                 'RESETEO_PASSWORD',
                 "Reseteo de contraseña y desbloqueo de cuenta para {$u['codigo_empleado']} ({$u['usuario']})",
-                $id_empleado
+                $current_admin_id
             );
 
             echo json_encode([
