@@ -39,6 +39,8 @@
 | `api.php` | Respuestas de excepción que revelan detalles internos | **Media** | **Mitigación aplicada; prueba pendiente** | Las excepciones generales se registran con `error_log`; la respuesta JSON al cliente usa un mensaje genérico. Falta comprobar el comportamiento en ejecución. |
 | `login.php` | Credenciales de demostración visibles en la interfaz | **Alta** | **Mitigación aplicada; revisar despliegue** | Se retiraron los botones y el JavaScript que rellenaban usuarios y contraseñas de prueba. Las cuentas semilla siguen siendo solo para desarrollo y deben cambiar sus credenciales antes de producción. |
 | `migracion_fase3_1_debe_cambiar_password.sql` | Fallo si la columna ya existe y riesgo de conservar claves semilla conocidas | **Alta** | **Mitigación aplicada; prueba SQL pendiente** | La migración comprueba la existencia de la columna antes de alterar el esquema y marca para cambio obligatorio las cuentas que conservan los hashes semilla conocidos. Debe probarse en una base desechable con y sin la columna. |
+| `api.php` | Colisión de códigos de empleado en altas concurrentes | **Media** | **Mitigación aplicada; prueba concurrente pendiente** | La generación se serializa con un bloqueo nominal MySQL y se libera en `finally`; el índice `UNIQUE` de `codigo_empleado` se mantiene como defensa final. Probar altas simultáneas en el entorno local. |
+| `database.sql` | Las reservas vencidas no dejaban un evento individual de auditoría | **Media** | **Mitigación aplicada; prueba SQL pendiente** | El evento llama a un procedimiento que cambia cada reserva vencida y registra `RESERVA_EXPIRADA` en la misma transacción. Verificarlo con `event_scheduler` habilitado en una base desechable. |
 
 ---
 
@@ -62,7 +64,7 @@
 
 ## 3. Estado actual y limitaciones
 
-Esta revisión estática identificó problemas que contradicen la conclusión anterior de cobertura completa. En la rama `fase-3-5/seguridad-estabilizacion` se aplicaron mitigaciones para el XSS del modal de `usuarios.php`, la exposición de excepciones generales en `api.php`, la visualización de credenciales de prueba en `login.php` y la migración de cambio obligatorio de contraseña.
+Esta revisión estática identificó problemas que contradicen la conclusión anterior de cobertura completa. En la rama `fase-3-5/seguridad-estabilizacion` se aplicaron mitigaciones para el XSS del modal de `usuarios.php`, la exposición de excepciones generales en `api.php`, la visualización de credenciales de prueba en `login.php`, la migración de cambio obligatorio de contraseña, la generación concurrente de códigos de empleados y la auditoría de expiración de reservas.
 
 **Estas mitigaciones todavía no se consideran verificadas en ejecución.** No se ejecutó la aplicación contra una base de datos ni se realizaron pruebas dinámicas automatizadas. Antes de cerrar la fase deben comprobarse, como mínimo:
 
@@ -71,6 +73,8 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 - Login: no deben aparecer credenciales en la interfaz; las cuentas semilla que aún conservan hashes conocidos deben exigir cambio de contraseña.
 - Migración: probar en una base descartable tanto con la columna ausente como con la columna existente.
 - Base de datos: se retiraron las instrucciones `DROP TABLE` de `database.sql`; falta probar la instalación en una base vacía y comprobar que ante tablas existentes se detenga sin borrar datos.
+- Concurrencia: probar altas simultáneas y confirmar que los códigos generados son únicos.
+- Expiración: en una base descartable, forzar el vencimiento de una reserva y comprobar tanto el cambio de estado como la fila `RESERVA_EXPIRADA` en `log_acciones`.
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
