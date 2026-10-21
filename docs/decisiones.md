@@ -105,7 +105,8 @@ Dos vendedores no pueden reservar la última unidad a la vez. Crear, aprobar y f
 
 ## 7.1 Expiración automática
 
-- Un `EVENT` de MySQL se ejecuta cada minuto y pasa a `EXPIRADA` las reservas `ACTIVA` y `PENDIENTE_AUTORIZACION` con `fecha_vencimiento` vencida.
+- Un `EVENT` de MySQL se ejecuta cada minuto y llama al procedimiento `expirar_reservas_vencidas_procedure`, que pasa a `EXPIRADA` las reservas `ACTIVA` y `PENDIENTE_AUTORIZACION` vencidas.
+- Cada transición exitosa se registra en `log_acciones` como `RESERVA_EXPIRADA`, con `id_empleado = NULL` para identificar la acción automática del sistema. La actualización y su registro se realizan dentro de una transacción.
 - Además, el sistema ejecuta el mismo chequeo al consultar stock, para que el dato sea correcto aunque el evento no esté activo.
 - Requiere `event_scheduler = ON` en MySQL (documentar cómo activarlo en WAMP).
 
@@ -125,7 +126,7 @@ Dos vendedores no pueden reservar la última unidad a la vez. Crear, aprobar y f
 Desde la Fase 1 existen dos registros:
 
 - **`movimientos_stock`:** cada cambio de `S_F` (facturación, ajuste, ingreso), con producto, cantidad, tipo, usuario, fecha y motivo.
-- **`log_acciones`:** reserva creada, aprobada, rechazada, extendida, liberada, confirmada, facturada o expirada; alta/edición de usuarios y productos; con usuario y fecha.
+- **`log_acciones`:** reserva creada, aprobada, rechazada, extendida, liberada, confirmada, facturada o expirada; alta/edición de usuarios y productos; con actor y fecha. Para eventos automáticos, `id_empleado` puede ser `NULL` y el detalle identifica la acción del sistema.
 
 ## 10. Datos de prueba
 
