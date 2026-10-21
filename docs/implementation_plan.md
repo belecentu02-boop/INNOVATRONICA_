@@ -41,7 +41,8 @@ flowchart TD
 flowchart TD
     F1["Fase 1: Base de Datos, Configuración y Login (3 Roles)"] --> F2["Fase 2: Dashboard y Ambiente de Trabajo Diferenciado"]
     F2 --> F3["Fase 3: Panel de Administración de Usuarios (Exclusivo ADMIN)"]
-    F3 --> F4["Fase 4: Catálogo, Stock en Tiempo Real y Alertas de Reabastecimiento"]
+    F3 --> F35["Fase 3.5: Estabilización, Seguridad y Documentación"]
+    F35 --> F4["Fase 4: Catálogo, Stock en Tiempo Real y Alertas de Reabastecimiento"]
     F4 --> F5["Fase 5: Reservas, Temporizador y Aprobación de Stock Crítico (Supervisor)"]
     F5 --> F6["Fase 6: Facturación / Despacho, Ajustes de Stock (Admin) y Expiración"]
 ```
@@ -56,7 +57,66 @@ flowchart TD
 * **Base de Datos ([database.sql](file:///c:/wamp64/www/innovatronica/database.sql) & [config/db.php](file:///c:/wamp64/www/innovatronica/config/db.php)):**
   - Unificar nombre de base de datos a `innovatronica`.
   - Ampliar el `ENUM('VENDEDOR_INTERNO','SUPERVISOR_COMERCIAL','ADMIN')` en la tabla `usuarios`.
-  - Crear usuario Administrador inicial (`admin` / `admin123`) junto a `supervisor` y `vendedor`, con hashes válidos (`$2y$` de PHP).
+  - Crear cuentas iniciales de desarrollo con hashes de contraseña válidos (`$2y# Plan de Trabajo por Fases: Innovatrónica S.A. (Actualizado con Rol ADMIN)
+
+Este plan incorpora la figura del **ADMIN (Administrador del Sistema / Dirección)** como máxima autoridad jerárquica por encima del **Supervisor Comercial** y del **Vendedor Interno**.
+
+---
+
+## 1. Jerarquía de Roles y Matriz de Permisos
+
+```mermaid
+flowchart TD
+    ADMIN["ADMIN (Administrador General)<br/>• Gestión de Usuarios (Vendedores y Supervisores)<br/>• Gestión de Productos y Depósito<br/>• Ajustes de Inventario y Umbrales<br/>• Visión global y Auditoría"]
+    SUP["SUPERVISOR COMERCIAL<br/>• Autorización de Reservas Críticas<br/>• Extensión y Liberación de Reservas<br/>• Interfaz de Alertas de Reabastecimiento<br/>• Supervisión global de Ventas"]
+    VEND["VENDEDOR INTERNO<br/>• Búsqueda de Stock y Ubicaciones<br/>• Reservas estándar (24 hs)<br/>• Solicitud de Reserva Crítica<br/>• Confirmación de reservas propias"]
+
+    ADMIN --> SUP
+    SUP --> VEND
+```
+
+### Matriz Comparativa de Capacidades:
+
+| Módulo / Funcionalidad | VENDEDOR INTERNO | SUPERVISOR COMERCIAL | ADMIN GENERAL |
+| :--- | :---: | :---: | :---: |
+| **Búsqueda de stock y coordenadas de depósito** | ✅ | ✅ | ✅ |
+| **Crear reservas normales (24 hs, sin stock crítico)** | ✅ | ✅ | ✅ |
+| **Solicitar reserva en stock crítico ($S_D \le U_{\min}$)** | ✅ *(Pasa a Pendiente)* | ✅ *(Autoriza directo)* | ✅ *(Autoriza directo)* |
+| **Aprobar / Rechazar reservas en stock crítico** | ❌ | ✅ | ✅ |
+| **Extender / Liberar manualmente reservas activas** | ❌ | ✅ | ✅ |
+| **Visualizar reservas** | Solo las propias | Todas las del equipo | Todas las del equipo |
+| **Acceso a Interfaz de Alertas de Reabastecimiento** | Solo lectura | ✅ | ✅ |
+| **Procesar Facturación / Despacho** (Descuento físico) | ❌ | ✅ | ✅ |
+| **Registrar nuevos Vendedores y Supervisores** | ❌ | ❌ *(Bloqueado)* | ✅ **(Exclusivo Admin)** |
+| **Editar usuarios y resetear contraseñas** | ❌ | ❌ | ✅ **(Exclusivo Admin)** |
+| **Crear / Editar productos (SKU, nombre, ubicación)** | ❌ | ❌ | ✅ **(Exclusivo Admin)** |
+| **Ajustar Stock Físico inicial y Umbrales Mínimos** | ❌ | ❌ | ✅ **(Exclusivo Admin)** |
+
+---
+
+## 2. Estructura de Fases de Trabajo
+
+```mermaid
+flowchart TD
+    F1["Fase 1: Base de Datos, Configuración y Login (3 Roles)"] --> F2["Fase 2: Dashboard y Ambiente de Trabajo Diferenciado"]
+    F2 --> F3["Fase 3: Panel de Administración de Usuarios (Exclusivo ADMIN)"]
+    F3 --> F35["Fase 3.5: Estabilización, Seguridad y Documentación"]
+    F35 --> F4["Fase 4: Catálogo, Stock en Tiempo Real y Alertas de Reabastecimiento"]
+    F4 --> F5["Fase 5: Reservas, Temporizador y Aprobación de Stock Crítico (Supervisor)"]
+    F5 --> F6["Fase 6: Facturación / Despacho, Ajustes de Stock (Admin) y Expiración"]
+```
+
+---
+
+## 3. Detalle de Cada Fase
+
+### Fase 1: Base de Datos, Configuración y Login (Soporte para 3 Roles)
+> **Objetivo:** Asegurar la infraestructura de datos y autenticación con roles bien definidos y sin errores.
+
+* **Base de Datos ([database.sql](file:///c:/wamp64/www/innovatronica/database.sql) & [config/db.php](file:///c:/wamp64/www/innovatronica/config/db.php)):**
+  - Unificar nombre de base de datos a `innovatronica`.
+  - Ampliar el `ENUM('VENDEDOR_INTERNO','SUPERVISOR_COMERCIAL','ADMIN')` en la tabla `usuarios`.
+ de PHP), sin publicar contraseñas reales en la documentación. Las cuentas semilla deben exigir cambio de contraseña y no deben utilizarse en producción.
   - Incluir estados de reserva: `ACTIVA`, `PENDIENTE_AUTORIZACION`, `CONFIRMADA`, `FACTURADA`, `EXPIRADA`.
   - Configurar zona horaria estándar de Argentina (`America/Argentina/Buenos_Aires`).
 * **Autenticación ([login.php](file:///c:/wamp64/www/innovatronica/login.php) & [includes/auth.php](file:///c:/wamp64/www/innovatronica/includes/auth.php)):**
@@ -99,6 +159,19 @@ flowchart TD
     - Estado (activo/inactivo) y fecha de creación.
 * **Seguridad en Backend ([api.php](file:///c:/wamp64/www/innovatronica/api.php)):**
   - Endpoints protegidos con verificación estricta `es_admin()`.
+
+---
+
+### Fase 3.5: Estabilización, Seguridad y Documentación
+> **Objetivo:** cerrar hallazgos de seguridad y evitar regresiones antes de ampliar el sistema.
+
+* Corregir la interpolación de datos de empleados en el modal de `usuarios.php`.
+* Evitar que las respuestas de `api.php` expongan detalles internos de excepciones.
+* Retirar credenciales de demostración de la interfaz de login y exigir cambio de contraseña a cuentas semilla con hashes conocidos.
+* Hacer que `migracion_fase3_1_debe_cambiar_password.sql` tolere que la columna ya exista.
+* Evitar que `database.sql` elimine tablas existentes; usarlo solo para instalación inicial.
+* Alinear `docs/seguridad.md`, `docs/trazabilidad.md` y este plan con el estado real del código.
+* Probar cada cambio en un entorno local/base descartable y registrar resultados. No declarar la fase cerrada sin pruebas ejecutadas.
 
 ---
 
@@ -147,9 +220,10 @@ flowchart TD
 ## 4. Plan de Verificación y Testing
 
 1. **Test de Autenticación y 3 Roles:**
-   - Iniciar sesión como `admin` (`admin123`) -> Verifica acceso a "Gestión de Personal".
-   - Iniciar sesión como `supervisor` (`supervisor123`) -> Verifica que **NO** tiene acceso a crear usuarios.
-   - Iniciar sesión como `vendedor` (`vendedor123`) -> Verifica acceso restringido solo a catálogo y sus propias reservas.
+   - Utilizar las credenciales configuradas en el entorno local (no guardar contraseñas en la documentación ni en el repositorio).
+   - Verificar acceso de ADMIN a "Gestión de Personal".
+   - Verificar que Supervisor y Vendedor no puedan crear usuarios ni acceder a endpoints administrativos.
+   - Verificar que las cuentas semilla que conservan credenciales conocidas deban cambiar la contraseña antes de operar.
 2. **Test de Alta de Usuarios (Admin):**
    - El admin crea un nuevo vendedor y un nuevo supervisor. Comprobar inicio de sesión con las nuevas cuentas.
 3. **Test de Reserva con Stock Crítico:**
