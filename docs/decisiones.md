@@ -165,3 +165,18 @@ El detalle de cada fase está en `implementation_plan.md`, salvo donde este docu
 | Fecha | Cambio | Motivo |
 | :--- | :--- | :--- |
 | 2026-10-20 | Versión inicial | Cerrar decisiones antes de la Fase 1 |
+
+## 15. Gestión de usuarios (Fase 3)
+
+- Solo ADMIN accede a la gestión de personal (403 para los demás, verificado en backend).
+- Alta: nombre completo, usuario único, contraseña inicial y rol
+  (VENDEDOR_INTERNO o SUPERVISOR_COMERCIAL). Desde la interfaz NO se crean ADMIN.
+- El código de empleado (EMP-001, EMP-002...) se genera automáticamente.
+- Contraseña: mínimo 8 caracteres, guardada con password_hash.
+- No se borran usuarios: se desactivan (conservan sus reservas e historial).
+- Un usuario desactivado no puede iniciar sesión, y si tenía una sesión
+  abierta, se invalida en la siguiente petición.
+- El Admin no puede desactivarse a sí mismo ni cambiar su propio rol.
+- Edición permitida: nombre, rol y estado. Reseteo de contraseña por el Admin.
+- Cada alta, edición, desactivación y reseteo se registra en log_acciones.
+- Confirmaciones con modales propios, no con confirm().

@@ -22,16 +22,18 @@ if (!headers_sent()) {
 
 // Iniciar sesión segura si no está activa
 if (session_status() === PHP_SESSION_NONE) {
-    $segura = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
-    session_set_cookie_params([
-        'lifetime' => 0,
-        'path'     => '/',
-        'domain'   => '',
-        'secure'   => $segura,
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
-    session_start();
+    if (!headers_sent()) {
+        $segura = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => $segura,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+    }
+    @session_start();
 }
 
 /**
@@ -121,11 +123,55 @@ function rol_label(?string $rol = null): string {
 }
 
 /**
- * Redirigir al login si el usuario no tiene una sesión activa.
+ * Destruir exhaustivamente la sesión del servidor y la cookie en el cliente.
+ */
+function destruir_sesion(): void {
+    $_SESSION = [];
+    if (ini_get('session.use_cookies')) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params['path'],
+            $params['domain'],
+            $params['secure'],
+            $params['httponly']
+        );
+    }
+    session_destroy();
+}
+
+/**
+ * Comprobar en tiempo real si el usuario autenticado continúa activo en la BD.
+ */
+function verificar_sesion_activa(): bool {
+    if (!esta_autenticado()) {
+        return false;
+    }
+    try {
+        $pdo = db();
+        $st = $pdo->prepare('SELECT activo FROM usuarios WHERE id_empleado = ? LIMIT 1');
+        $st->execute([(int)$_SESSION['u']['id_empleado']]);
+        $activo = $st->fetchColumn();
+        return ($activo !== false && (int)$activo === 1);
+    } catch (Exception $e) {
+        error_log('Error al verificar sesión activa: ' . $e->getMessage());
+        return false;
+    }
+}
+
+/**
+ * Redirigir al login si el usuario no tiene una sesión activa o si fue desactivado.
  */
 function requerir_login(): void {
     if (!esta_autenticado()) {
         header('Location: login.php');
+        exit;
+    }
+    if (!verificar_sesion_activa()) {
+        destruir_sesion();
+        header('Location: login.php?error=desactivado');
         exit;
     }
 }

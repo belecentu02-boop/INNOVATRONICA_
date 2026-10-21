@@ -13,6 +13,9 @@ if (esta_autenticado()) {
 }
 
 $error = '';
+if (isset($_GET['error']) && $_GET['error'] === 'desactivado') {
+    $error = 'Tu sesión ha finalizado porque tu cuenta fue desactivada por el Administrador.';
+}
 $usuario_val = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -47,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     // Verificar si la cuenta está activa
                     if (!$error && (int)$u['activo'] !== 1) {
+                        registrar_log('LOGIN_BLOQUEADO', 'Intento de inicio de sesión con usuario inactivo: ' . $u['usuario'], (int)$u['id_empleado']);
                         $error = 'Usuario inactivo. Comuníquese con el Administrador del Sistema.';
                     }
 
