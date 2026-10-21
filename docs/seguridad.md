@@ -1,6 +1,6 @@
 # Auditoría de Seguridad PHP - Innovatrónica S.A.
 
-> **Fecha de informe:** 2026-10-20  
+> **Fecha de revisión:** 2026-10-21  
 > **Alcance:** Fase 1 (Configuración de base de datos, módulos de autenticación, control de acceso y vistas)  
 > **Skill aplicada:** `seguridad-php`  
 > **Fuentes de referencia:** `docs/decisiones.md` (Secciones 3, 7 y 8) y `rules.md`  
@@ -23,7 +23,7 @@
 | `login.php` | Acceso a cuentas de usuarios inactivos / desactivados | **Alta** | **Corregido** | Verificación de `activo === 1` tras autenticar credenciales; denegación con registro de auditoría `LOGIN_BLOQUEADO` en `log_acciones`. |
 | `includes/auth.php` | Persistencia de sesiones abiertas tras desactivar un usuario | **Alta** | **Corregido** | Función `verificar_sesion_activa()` consulta en BD en cada petición. Si la cuenta fue desactivada, destruye inmediatamente la sesión/cookie y redirige a `login.php?error=desactivado`. |
 | `usuarios.php` | Acceso a panel de gestión por usuarios no administradores | **Alta** | **Corregido** | `requerir_rol(['ADMIN'])` en el backend deniega el acceso con HTTP 403 Forbidden a vendedores y supervisores. |
-| `usuarios.php` | Inyección de scripts maliciosos (XSS reflejado o persistente) | **Alta** | **Corregido** | Escape total en servidor con `h()` / `htmlspecialchars` y en el cliente con `textContent` y sanitización DOM. |
+| `usuarios.php` | Inyección de scripts maliciosos (XSS reflejado o persistente) | **Alta** | **Mitigación aplicada; prueba pendiente** | El modal de activación/desactivación construye la descripción con nodos DOM y `textContent`, sin interpolar datos del empleado en `innerHTML`. Falta prueba dinámica con valores de prueba que contengan etiquetas y eventos HTML. |
 | `usuarios.php` | Confirmaciones con diálogos nativos vulnerables (`confirm`, `prompt`) | **Baja** | **Corregido** | Eliminado cualquier uso de diálogos nativos del navegador; implementados modales propios accesibles con control de Escape y clic fuera. |
 | `api.php` | Invocación de endpoints sin autenticación o por rol indebido | **Alta** | **Corregido** | Verificación estricta en tiempo real con `esta_autenticado()`, `verificar_sesion_activa()` y `es_admin()`, retornando 401 y 403 Forbidden. |
 | `api.php` | Falsificación de peticiones en endpoints de gestión (CSRF) | **Alta** | **Corregido** | Verificación mandatoria de token CSRF (`X-CSRF-Token` o payload) en todas las operaciones POST con `verificar_csrf()`. |
@@ -36,6 +36,9 @@
 | `cambiar_password.php` | Ataques de fuerza bruta sobre la contraseña actual en el formulario de cambio | **Alta** | **Corregido** | Límite de 5 intentos fallidos consecutivos en `password_actual`; al quinto fallo se bloquea temporalmente por 15 minutos en BD (`bloqueado_hasta`). |
 | `cambiar_password.php` | Reutilización de contraseña actual o contraseñas débiles | **Media** | **Corregido** | Validación de longitud mínima (8 caracteres) y rechazo si la nueva contraseña es idéntica a la actual (`password_verify`). |
 | `cambiar_password.php` | Falsificación de petición (CSRF) y fijación de sesión tras cambio de clave | **Alta** | **Corregido** | Token CSRF mandatorio verificado con `hash_equals()`; regeneración de sesión obligatoria con `session_regenerate_id(true)` tras el cambio exitoso. |
+| `api.php` | Respuestas de excepción que revelan detalles internos | **Media** | **Mitigación aplicada; prueba pendiente** | Las excepciones generales se registran con `error_log`; la respuesta JSON al cliente usa un mensaje genérico. Falta comprobar el comportamiento en ejecución. |
+| `login.php` | Credenciales de demostración visibles en la interfaz | **Alta** | **Mitigación aplicada; revisar despliegue** | Se retiraron los botones y el JavaScript que rellenaban usuarios y contraseñas de prueba. Las cuentas semilla siguen siendo solo para desarrollo y deben cambiar sus credenciales antes de producción. |
+| `migracion_fase3_1_debe_cambiar_password.sql` | Fallo si la columna ya existe y riesgo de conservar claves semilla conocidas | **Alta** | **Mitigación aplicada; prueba SQL pendiente** | La migración comprueba la existencia de la columna antes de alterar el esquema y marca para cambio obligatorio las cuentas que conservan los hashes semilla conocidos. Debe probarse en una base desechable con y sin la columna. |
 
 ---
 
@@ -46,8 +49,8 @@
    - **100% de las consultas utilizan sentencias preparadas con PDO** (`$pdo->prepare(...)` con parámetros posicionales `?`).
    - Ninguna variable se concatena directamente en sentencias SQL.
 2. **Salidas sin escapar (Prevención XSS):**
-   - En `usuarios.php`, `cambiar_password.php`, `login.php` e `index.php`, toda salida dinámica PHP pasa por `h()` o casteo a entero `(int)`.
-   - En el código JavaScript de `usuarios.php` y `cambiar_password.php`, no se inyectan variables crudas con `innerHTML`: se usa `textContent` y sanitización DOM.
+   - Las vistas PHP revisadas usan `h()` o casteo a entero en las salidas dinámicas visibles.
+   - Se corrigió la interpolación de nombre y código en el modal de `usuarios.php`. Esta corrección aún requiere una prueba dinámica; la presencia de otros usos de `innerHTML` debe evaluarse caso por caso, comprobando que los datos variables estén escapados o se construyan con nodos DOM.
 3. **Endpoints y vistas sin chequeo de rol o estado:**
    - `usuarios.php` ejecuta `requerir_rol(['ADMIN'])` en el backend.
    - `api.php` comprueba `debe_cambiar_password_actual()` (403 PASSWORD_CHANGE_REQUIRED) y `es_admin()`.
@@ -57,8 +60,17 @@
 
 ---
 
-## 3. Conclusión de la Auditoría
+## 3. Estado actual y limitaciones
 
-Todos los requisitos de seguridad de las **Fases 1, 3 y 3.1** estipulados en `docs/decisiones.md` (Secciones 3, 7, 8, 15 y 16) y en la skill `seguridad-php` se encuentran **100% implementados, mitigados y verificados**.
-No se registran problemas de gravedad alta, media o baja pendientes en el alcance del sistema.
+Esta revisión estática identificó problemas que contradicen la conclusión anterior de cobertura completa. En la rama `fase-3-5/seguridad-estabilizacion` se aplicaron mitigaciones para el XSS del modal de `usuarios.php`, la exposición de excepciones generales en `api.php`, la visualización de credenciales de prueba en `login.php` y la migración de cambio obligatorio de contraseña.
+
+**Estas mitigaciones todavía no se consideran verificadas en ejecución.** No se ejecutó la aplicación contra una base de datos ni se realizaron pruebas dinámicas automatizadas. Antes de cerrar la fase deben comprobarse, como mínimo:
+
+- XSS: nombre y código con cadenas como `<img src=x onerror=alert(1)>`, que deben mostrarse como texto sin ejecutar código.
+- API: una excepción simulada debe generar respuesta genérica para el cliente y conservar detalles únicamente en el log del servidor.
+- Login: no deben aparecer credenciales en la interfaz; las cuentas semilla que aún conservan hashes conocidos deben exigir cambio de contraseña.
+- Migración: probar en una base descartable tanto con la columna ausente como con la columna existente.
+- Base de datos: `database.sql` aún contiene instrucciones `DROP TABLE`; no debe ejecutarse sobre una base con datos que se quieran conservar.
+
+El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
