@@ -45,6 +45,7 @@
 | `api.php` | Las acciones administrativas podían quedar atribuidas al usuario objetivo en vez del administrador que las ejecutó | **Media** | **Mitigación aplicada; prueba de auditoría pendiente** | Los eventos de alta, edición, activación/desactivación y reseteo de contraseña usan el ID del administrador autenticado como actor; el objetivo queda descrito en el detalle. |
 | `includes/auth.php` | El rol guardado en sesión podía quedar desactualizado después de que un administrador cambiara el rol de una cuenta | **Alta** | **Mitigación aplicada; prueba pendiente** | En cada petición autenticada se sincronizan rol e identidad desde la base de datos; verificar que una degradación de rol surta efecto inmediatamente. |
 | `login.php` / `cambiar_password.php` | El token CSRF previo podía sobrevivir a la regeneración del ID de sesión | **Media** | **Mitigación aplicada; prueba pendiente** | El token CSRF se invalida al completar el login y el cambio de contraseña; el token nuevo se genera cuando se renderiza el siguiente formulario. |
+| `logout.php` | El cierre de sesión aceptaba GET sin token CSRF | **Baja** | **Mitigación aplicada; prueba pendiente** | El cierre requiere POST y token CSRF; la navegación ahora usa formularios con token. |
 
 ---
 
@@ -83,6 +84,7 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 - Cambio de contraseña: provocar un error controlado y confirmar que la interfaz muestra un mensaje genérico, sin detalles de la excepción.
 - Cambio de rol: con dos sesiones de prueba, degradar un administrador a vendedor y confirmar que su siguiente petición recibe permisos de vendedor.
 - Sesión/CSRF: confirmar que el token previo al login y el previo al cambio de contraseña dejan de validarse después de esas operaciones.
+- Logout: confirmar que GET devuelve 405, POST sin token devuelve 403 y POST con token válido cierra la sesión.
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
