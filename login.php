@@ -67,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             // Regenerar ID de sesión para prevenir Session Fixation
                             session_regenerate_id(true);
+                            // No reutilizar un token CSRF creado antes de autenticar.
+                            unset($_SESSION['csrf_token']);
 
                             // Guardar datos esenciales en sesión
                             $_SESSION['u'] = [
