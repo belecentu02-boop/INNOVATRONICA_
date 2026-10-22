@@ -102,6 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             // Regenerar identificador de sesión por seguridad (decisiones.md secc. 16)
                             session_regenerate_id(true);
+                            // Rotar también el token CSRF tras el cambio de credenciales.
+                            unset($_SESSION['csrf_token']);
 
                             // Registrar evento en log de auditoría
                             $tipo_cambio = $es_obligatorio ? 'obligatorio' : 'voluntario';
