@@ -43,6 +43,8 @@
 | `database.sql` | Las reservas vencidas no dejaban un evento individual de auditoría | **Media** | **Mitigación aplicada; prueba SQL pendiente** | El evento llama a un procedimiento que cambia cada reserva vencida y registra `RESERVA_EXPIRADA` en la misma transacción. Verificarlo con `event_scheduler` habilitado en una base desechable. |
 | `cambiar_password.php` | La excepción general podía revelar detalles internos al usuario | **Media** | **Mitigación aplicada; prueba pendiente** | El mensaje visible ahora es genérico y el detalle técnico queda solo en `error_log`. |
 | `api.php` | Las acciones administrativas podían quedar atribuidas al usuario objetivo en vez del administrador que las ejecutó | **Media** | **Mitigación aplicada; prueba de auditoría pendiente** | Los eventos de alta, edición, activación/desactivación y reseteo de contraseña usan el ID del administrador autenticado como actor; el objetivo queda descrito en el detalle. |
+| `includes/auth.php` | El rol guardado en sesión podía quedar desactualizado después de que un administrador cambiara el rol de una cuenta | **Alta** | **Mitigación aplicada; prueba pendiente** | En cada petición autenticada se sincronizan rol e identidad desde la base de datos; verificar que una degradación de rol surta efecto inmediatamente. |
+| `login.php` / `cambiar_password.php` | El token CSRF previo podía sobrevivir a la regeneración del ID de sesión | **Media** | **Mitigación aplicada; prueba pendiente** | El token CSRF se invalida al completar el login y el cambio de contraseña; el token nuevo se genera cuando se renderiza el siguiente formulario. |
 
 ---
 
@@ -79,6 +81,8 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 - Expiración: en una base descartable, forzar el vencimiento de una reserva y comprobar tanto el cambio de estado como la fila `RESERVA_EXPIRADA` en `log_acciones`.
 - Auditoría de usuarios: ejecutar altas, ediciones, activaciones/desactivaciones y reseteos con un administrador de prueba; confirmar que `log_acciones.id_empleado` identifica al administrador actor y no al usuario objetivo.
 - Cambio de contraseña: provocar un error controlado y confirmar que la interfaz muestra un mensaje genérico, sin detalles de la excepción.
+- Cambio de rol: con dos sesiones de prueba, degradar un administrador a vendedor y confirmar que su siguiente petición recibe permisos de vendedor.
+- Sesión/CSRF: confirmar que el token previo al login y el previo al cambio de contraseña dejan de validarse después de esas operaciones.
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
