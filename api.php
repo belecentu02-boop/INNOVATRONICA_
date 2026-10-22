@@ -160,34 +160,58 @@ try {
                 exit;
             }
 
-            // Generación automática de código de empleado correlativo (EMP-001, EMP-002, etc.)
-            $stCodigos = $pdo->query("SELECT codigo_empleado FROM usuarios WHERE codigo_empleado LIKE 'EMP-%'");
-            $maxNum = 0;
-            while ($row = $stCodigos->fetch(PDO::FETCH_ASSOC)) {
-                $num = (int)substr($row['codigo_empleado'], 4);
-                if ($num > $maxNum) {
-                    $maxNum = $num;
+            // Serializar la generación de códigos para evitar colisiones entre altas concurrentes.
+            // GET_LOCK es por conexión MySQL; el índice UNIQUE de codigo_empleado sigue siendo
+            // la última defensa frente a cualquier escritor que no utilice este bloqueo.
+            $lockName = 'innovatronica_codigo_empleado';
+            $stLock = $pdo->prepare('SELECT GET_LOCK(?, 5)');
+            $stLock->execute([$lockName]);
+            if ((int)$stLock->fetchColumn() !== 1) {
+                http_response_code(503);
+                echo json_encode([
+                    'ok' => false,
+                    'error' => 'No se pudo reservar un código de empleado en este momento. Inténtalo nuevamente.'
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            try {
+                $stCodigos = $pdo->query("SELECT codigo_empleado FROM usuarios WHERE codigo_empleado LIKE 'EMP-%'");
+                $maxNum = 0;
+                while ($row = $stCodigos->fetch(PDO::FETCH_ASSOC)) {
+                    $num = (int)substr($row['codigo_empleado'], 4);
+                    if ($num > $maxNum) {
+                        $maxNum = $num;
+                    }
+                }
+                $siguienteNum = $maxNum + 1;
+                $codigo_empleado = sprintf('EMP-%03d', $siguienteNum);
+
+                // Cifrado seguro de contraseña
+                $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+                // Inserción con cambio de clave obligatorio = 1.
+                $stIns = $pdo->prepare('
+                    INSERT INTO usuarios (codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password)
+                    VALUES (?, ?, ?, ?, ?, 1, 1)
+                ');
+                $stIns->execute([$codigo_empleado, $nombre, $usuario, $password_hash, $rol]);
+                $nuevo_id = (int)$pdo->lastInsertId();
+            } finally {
+                // Liberar el bloqueo incluso si falla la inserción.
+                try {
+                    $stUnlock = $pdo->prepare('SELECT RELEASE_LOCK(?)');
+                    $stUnlock->execute([$lockName]);
+                } catch (Throwable $eUnlock) {
+                    error_log('No se pudo liberar el bloqueo de código de empleado: ' . $eUnlock->getMessage());
                 }
             }
-            $siguienteNum = $maxNum + 1;
-            $codigo_empleado = sprintf('EMP-%03d', $siguienteNum);
-
-            // Cifrado seguro de contraseña
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
-            // Inserción en la base de datos (con cambio de clave obligatorio = 1)
-            $stIns = $pdo->prepare('
-                INSERT INTO usuarios (codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password) 
-                VALUES (?, ?, ?, ?, ?, 1, 1)
-            ');
-            $stIns->execute([$codigo_empleado, $nombre, $usuario, $password_hash, $rol]);
-            $nuevo_id = (int)$pdo->lastInsertId();
 
             // Auditoría en log_acciones
             registrar_log(
                 'ALTA_USUARIO',
                 "Alta de empleado {$codigo_empleado} ('{$usuario}', rol: {$rol}) por Administrador",
-                $nuevo_id
+                $current_admin_id
             );
 
             echo json_encode([
@@ -277,7 +301,7 @@ try {
                 $rol,
                 $activo
             );
-            registrar_log('EDICION_USUARIO', $detalles, $id_empleado);
+            registrar_log('EDICION_USUARIO', $detalles, $current_admin_id);
 
             echo json_encode([
                 'ok'      => true,
@@ -333,7 +357,7 @@ try {
                 $u['usuario'],
                 ($nuevo_activo === 0 ? 'Sesión invalidada para próximas peticiones.' : '')
             );
-            registrar_log($accion_log, $detalle_log, $id_empleado);
+            registrar_log($accion_log, $detalle_log, $current_admin_id);
 
             echo json_encode([
                 'ok'      => true,
@@ -393,7 +417,7 @@ try {
             registrar_log(
                 'RESETEO_PASSWORD',
                 "Reseteo de contraseña y desbloqueo de cuenta para {$u['codigo_empleado']} ({$u['usuario']})",
-                $id_empleado
+                $current_admin_id
             );
 
             echo json_encode([
@@ -424,7 +448,7 @@ try {
     http_response_code(500);
     echo json_encode([
         'ok'    => false,
-        'error' => 'Error del servidor: ' . $e->getMessage()
+        'error' => 'Ocurrió un error interno al procesar la solicitud. Inténtalo nuevamente.'
     ], JSON_UNESCAPED_UNICODE);
     exit;
 }

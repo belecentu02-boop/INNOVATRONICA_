@@ -67,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                             // Regenerar ID de sesión para prevenir Session Fixation
                             session_regenerate_id(true);
+                            // No reutilizar un token CSRF creado antes de autenticar.
+                            unset($_SESSION['csrf_token']);
 
                             // Guardar datos esenciales en sesión
                             $_SESSION['u'] = [
@@ -156,7 +158,7 @@ $csrf_token = generar_csrf();
           required 
           autofocus 
           value="<?= h($usuario_val) ?>"
-          placeholder="Ej: admin, supervisor, vendedor"
+          placeholder="Ingrese su usuario"
         >
       </div>
 
@@ -177,32 +179,6 @@ $csrf_token = generar_csrf();
       </button>
     </form>
 
-    <!-- Selector rápido de credenciales de prueba para los 3 roles -->
-    <div class="demo-accounts">
-      <div class="demo-title">Accesos Rápidos de Prueba (Fase 1)</div>
-      <div class="demo-buttons-grid">
-        <button type="button" class="btn-demo" onclick="setDemo('admin', 'admin123')">
-          <strong>Admin</strong>
-          <span>admin123</span>
-        </button>
-        <button type="button" class="btn-demo" onclick="setDemo('supervisor', 'supervisor123')">
-          <strong>Supervisor</strong>
-          <span>supervisor123</span>
-        </button>
-        <button type="button" class="btn-demo" onclick="setDemo('vendedor', 'vendedor123')">
-          <strong>Vendedor</strong>
-          <span>vendedor123</span>
-        </button>
-      </div>
-    </div>
-  </div>
 
-  <script>
-    function setDemo(user, pass) {
-      document.getElementById('usuario').value = user;
-      document.getElementById('password').value = pass;
-      document.getElementById('password').focus();
-    }
-  </script>
 </body>
 </html>

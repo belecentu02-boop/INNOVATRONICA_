@@ -737,6 +737,28 @@ require_once __DIR__ . '/includes/header.php';
     });
   }
 
+  // Renderiza la descripción sin interpretar nombre/código como HTML.
+  function establecerDescripcionToggle(contenedor, nombre, codigo, desactivar) {
+    const fragment = document.createDocumentFragment();
+    const nombreEl = document.createElement('strong');
+    nombreEl.textContent = nombre;
+    const codigoEl = document.createElement('code');
+    codigoEl.textContent = codigo;
+
+    if (desactivar) {
+      fragment.append('¿Está seguro de desactivar a ', nombreEl, ' (', codigoEl, ')?');
+      fragment.append(document.createElement('br'), document.createElement('br'));
+      fragment.append('Su sesión será ');
+      const invalidadaEl = document.createElement('strong');
+      invalidadaEl.textContent = 'invalidada inmediatamente';
+      fragment.append(invalidadaEl, ' en la próxima petición. El empleado no podrá iniciar sesión hasta ser reactivado.');
+    } else {
+      fragment.append('¿Confirma la reactivación de la cuenta de ', nombreEl, ' (', codigoEl, ')? Podrá volver a operar con su usuario y contraseña.');
+    }
+
+    contenedor.replaceChildren(fragment);
+  }
+
   // ------------------------------------------------------------
   // 3. Abrir Modal de Edición
   // ------------------------------------------------------------
@@ -826,14 +848,14 @@ require_once __DIR__ . '/includes/header.php';
           headerIcon.textContent = '⛔';
           headerText.textContent = 'Desactivar Cuenta';
           descBox.className = 'modal-alert modal-alert-danger';
-          descText.innerHTML = `¿Está seguro de desactivar a <strong>${nombre}</strong> (<code>${codigo}</code>)?<br><br>Su sesión será <strong>invalidada inmediatamente</strong> en la próxima petición. El empleado no podrá iniciar sesión hasta ser reactivado.`;
+          establecerDescripcionToggle(descText, nombre, codigo, true);
           submitBtn.className = 'btn btn-primary btn-action-danger';
           submitBtnText.textContent = 'Sí, Desactivar Cuenta';
         } else {
           headerIcon.textContent = '✅';
           headerText.textContent = 'Reactivar Cuenta';
           descBox.className = 'modal-alert modal-alert-info';
-          descText.innerHTML = `¿Confirma la reactivación de la cuenta de <strong>${nombre}</strong> (<code>${codigo}</code>)? Podrá volver a operar con su usuario y contraseña.`;
+          establecerDescripcionToggle(descText, nombre, codigo, false);
           submitBtn.className = 'btn btn-primary';
           submitBtnText.textContent = 'Sí, Reactivar Cuenta';
         }

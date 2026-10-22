@@ -160,9 +160,18 @@ function obtener_estado_usuario_db(bool $forzar_refresco = false): ?array {
     }
     try {
         $pdo = db();
-        $st = $pdo->prepare('SELECT activo, debe_cambiar_password FROM usuarios WHERE id_empleado = ? LIMIT 1');
+        $st = $pdo->prepare('SELECT activo, debe_cambiar_password, codigo_empleado, nombre, usuario, rol FROM usuarios WHERE id_empleado = ? LIMIT 1');
         $st->execute([(int)$_SESSION['u']['id_empleado']]);
         $row = $st->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            // Sincronizar identidad y rol en cada petición: los cambios de permisos
+            // aplicados por un administrador deben surtir efecto sin esperar otro login.
+            foreach (['codigo_empleado', 'nombre', 'usuario', 'rol'] as $campo) {
+                if (array_key_exists($campo, $row)) {
+                    $_SESSION['u'][$campo] = $row[$campo];
+                }
+            }
+        }
         $estado_cache = $row ?: null;
         return $estado_cache;
     } catch (Exception $e) {

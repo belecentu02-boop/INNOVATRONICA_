@@ -1555,6 +1555,19 @@ body {
   color: var(--danger-text);
 }
 
+.logout-form {
+  margin: 0;
+}
+
+.logout-form .user-dropdown-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+}
+
 /* Banner de cambio de contraseña obligatorio en cabecera */
 .mandatory-pwd-banner {
   background: #fffbeb;

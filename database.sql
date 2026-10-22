@@ -1,7 +1,14 @@
 -- ============================================================
 -- Base de Datos: Innovatrónica S.A. - Sistema de Control de Stock
--- Archivo: database.sql (Fase 1)
+-- Archivo: database.sql (Fase 1 - instalación inicial)
 -- Zona horaria: America/Argentina/Buenos_Aires (-03:00)
+--
+-- IMPORTANTE:
+-- Este script es solo para una instalación inicial en una base vacía.
+-- No lo ejecutes como mecanismo de actualización/migración.
+-- No elimina tablas existentes; si ya existen, MySQL detendrá el script
+-- al intentar crearlas. Para cambios sobre una instalación existente,
+-- utiliza migraciones revisadas y una copia de seguridad previa.
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS innovatronica 
@@ -9,18 +16,6 @@ CREATE DATABASE IF NOT EXISTS innovatronica
   COLLATE utf8mb4_unicode_ci;
 
 USE innovatronica;
-
--- Desactivar temporalmente revisión de claves foráneas para recreación limpia
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS log_acciones;
-DROP TABLE IF EXISTS movimientos_stock;
-DROP TABLE IF EXISTS reservas;
-DROP TABLE IF EXISTS inventario;
-DROP TABLE IF EXISTS productos;
-DROP TABLE IF EXISTS usuarios;
-
-SET FOREIGN_KEY_CHECKS = 1;
 
 -- ------------------------------------------------------------
 -- 1. Tabla de Usuarios (Soporte para 3 Roles y Bloqueo de Intentos)
@@ -122,34 +117,81 @@ CREATE TABLE log_acciones (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ------------------------------------------------------------
--- 7. Evento MySQL para Expiración Automática de Reservas Vencidas
+-- 7. Expiración automática de reservas con auditoría
 -- Requiere: SET GLOBAL event_scheduler = ON;
+-- Las expiraciones se registran individualmente en log_acciones.
 -- ------------------------------------------------------------
 DROP EVENT IF EXISTS expirar_reservas_vencidas;
-DELIMITER $$
+DROP PROCEDURE IF EXISTS expirar_reservas_vencidas_procedure;
+
+DELIMITER $
+CREATE PROCEDURE expirar_reservas_vencidas_procedure()
+BEGIN
+  DECLARE fin_cursor BOOLEAN DEFAULT FALSE;
+  DECLARE v_id_reserva VARCHAR(30);
+  DECLARE v_estado_anterior VARCHAR(30);
+
+  DECLARE cur_reservas CURSOR FOR
+    SELECT id_reserva, estado
+    FROM reservas
+    WHERE estado IN ('ACTIVA', 'PENDIENTE_AUTORIZACION')
+      AND fecha_vencimiento <= NOW();
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin_cursor = TRUE;
+  DECLARE EXIT HANDLER FOR SQLEXCEPTION
+  BEGIN
+    ROLLBACK;
+    RESIGNAL;
+  END;
+
+  START TRANSACTION;
+  OPEN cur_reservas;
+
+  ciclo_expiracion: LOOP
+    FETCH cur_reservas INTO v_id_reserva, v_estado_anterior;
+    IF fin_cursor THEN
+      LEAVE ciclo_expiracion;
+    END IF;
+
+    UPDATE reservas
+    SET estado = 'EXPIRADA'
+    WHERE id_reserva = v_id_reserva
+      AND estado = v_estado_anterior
+      AND estado IN ('ACTIVA', 'PENDIENTE_AUTORIZACION')
+      AND fecha_vencimiento <= NOW();
+
+    IF ROW_COUNT() = 1 THEN
+      INSERT INTO log_acciones (id_empleado, accion, detalles, ip)
+      VALUES (
+        NULL,
+        'RESERVA_EXPIRADA',
+        CONCAT('La reserva ', v_id_reserva,
+               ' venció automáticamente. Estado anterior: ', v_estado_anterior, '.'),
+        '127.0.0.1'
+      );
+    END IF;
+  END LOOP;
+
+  CLOSE cur_reservas;
+  COMMIT;
+END$
+
 CREATE EVENT expirar_reservas_vencidas
 ON SCHEDULE EVERY 1 MINUTE
 DO
-BEGIN
-  UPDATE reservas
-  SET estado = 'EXPIRADA'
-  WHERE estado IN ('ACTIVA', 'PENDIENTE_AUTORIZACION')
-    AND fecha_vencimiento <= NOW();
-END$$
+  CALL expirar_reservas_vencidas_procedure()$
 DELIMITER ;
 
 -- ============================================================
 -- DATOS SEMILLA / PRUEBA (Fase 1)
 -- ============================================================
 
--- Usuarios iniciales:
--- 1. admin / admin123 (ADMIN)
--- 2. supervisor / supervisor123 (SUPERVISOR_COMERCIAL)
--- 3. vendedor / vendedor123 (VENDEDOR_INTERNO)
+-- Cuentas iniciales de desarrollo. Las contraseñas conocidas deben cambiarse
+-- en el primer inicio de sesión. No usar estas cuentas en producción.
 INSERT INTO usuarios (id_empleado, codigo_empleado, nombre, usuario, password_hash, rol, activo, debe_cambiar_password) VALUES
-(1, 'EMP-001', 'Administrador General', 'admin', '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK', 'ADMIN', 1, 0),
-(2, 'EMP-002', 'Supervisor Comercial Demo', 'supervisor', '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e', 'SUPERVISOR_COMERCIAL', 1, 0),
-(3, 'EMP-003', 'Vendedor Interno Demo', 'vendedor', '$2y$10$EpLSEGLHIurm0BfQtoWo9.9imkGCLBJOQ9vGtc8ClbpGXd.glz85u', 'VENDEDOR_INTERNO', 1, 0);
+(1, 'EMP-001', 'Administrador General', 'admin', '$2y$10$OrEyXs8vqq1sMB2FmgAFKOC//thOsT/5mEsfqh3XADACsWfVO.WcK', 'ADMIN', 1, 1),
+(2, 'EMP-002', 'Supervisor Comercial Demo', 'supervisor', '$2y$10$OyRADfIhHPg0ksVTqt.x3eq8uo1EikLiDlQrA8u5MFstoUYqydg1e', 'SUPERVISOR_COMERCIAL', 1, 1),
+(3, 'EMP-003', 'Vendedor Interno Demo', 'vendedor', '$2y$10$EpLSEGLHIurm0BfQtoWo9.9imkGCLBJOQ9vGtc8ClbpGXd.glz85u', 'VENDEDOR_INTERNO', 1, 1);
 
 -- 18 Componentes Electrónicos con SKU Realista, Ubicación y Ficha Técnica
 INSERT INTO productos (sku, nombre, categoria, ficha_tecnica, ubicacion_deposito) VALUES

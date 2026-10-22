@@ -10,6 +10,7 @@ require_once __DIR__ . '/auth.php';
 requerir_login();
 
 $u = usuario_actual();
+$csrf_token = generar_csrf();
 $current_page = basename($_SERVER['PHP_SELF'] ?? 'index.php');
 
 // Etiqueta y estilo del badge según el rol del usuario
@@ -135,10 +136,13 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
               </span>
             </div>
           </div>
-          <a href="logout.php" class="btn btn-outline btn-sm user-dropdown-item-danger" id="btn-logout" title="Cerrar sesión actual">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            <span>Cerrar Sesión</span>
-          </a>
+          <form method="POST" action="logout.php" style="display:inline;">
+            <input type="hidden" name="csrf_token" value="<?= h($csrf_token) ?>">
+            <button type="submit" class="btn btn-outline btn-sm user-dropdown-item-danger" id="btn-logout" title="Cerrar sesión actual">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              <span>Cerrar Sesión</span>
+            </button>
+          </form>
         <?php else: ?>
           <div class="user-dropdown-wrapper" id="userDropdownWrapper">
             <button type="button" class="user-menu-trigger" id="userMenuTrigger" aria-expanded="false" aria-haspopup="true" aria-label="Menú de usuario">
@@ -180,14 +184,17 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
                 <span>Cambiar Contraseña</span>
               </a>
 
-              <a href="logout.php" class="user-dropdown-item user-dropdown-item-danger" role="menuitem" id="btn-logout" title="Cerrar sesión actual">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                  <polyline points="16 17 21 12 16 7"/>
-                  <line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                <span>Cerrar Sesión</span>
-              </a>
+              <form method="POST" action="logout.php" class="logout-form">
+                <input type="hidden" name="csrf_token" value="<?= h($csrf_token) ?>">
+                <button type="submit" class="user-dropdown-item user-dropdown-item-danger" role="menuitem" id="btn-logout" title="Cerrar sesión actual">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                    <polyline points="16 17 21 12 16 7"/>
+                    <line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  <span>Cerrar Sesión</span>
+                </button>
+              </form>
             </div>
           </div>
         <?php endif; ?>
