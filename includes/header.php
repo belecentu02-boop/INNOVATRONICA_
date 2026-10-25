@@ -28,7 +28,7 @@ $nav_items[] = [
     'id'    => 'nav-dashboard',
     'title' => 'Dashboard',
     'url'   => 'index.php',
-    'icon'  => '📊'
+    'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
 ];
 
 if (es_vendedor()) {
@@ -37,13 +37,13 @@ if (es_vendedor()) {
         'id'    => 'nav-stock',
         'title' => 'Stock',
         'url'   => 'stock.php',
-        'icon'  => '📦'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-reservas',
         'title' => 'Mis Reservas',
         'url'   => 'reservas.php',
-        'icon'  => '⏱️'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2M9 2h6M12 2v4M18 8l2-2"/></svg>'
     ];
 } elseif (es_supervisor()) {
     // Supervisor: Stock · Todas las Reservas · Alertas de Reabastecimiento
@@ -51,19 +51,19 @@ if (es_vendedor()) {
         'id'    => 'nav-stock',
         'title' => 'Stock',
         'url'   => 'stock.php',
-        'icon'  => '📦'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-reservas',
         'title' => 'Todas las Reservas',
         'url'   => 'reservas.php',
-        'icon'  => '📑'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 12h6M9 17h4"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-reabastecimiento',
         'title' => 'Alertas de Reabastecimiento',
         'url'   => 'reabastecimiento.php',
-        'icon'  => '⚠️'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>'
     ];
 } elseif (es_admin()) {
     // Admin: lo del supervisor + Gestión de Personal + Catálogo/Inventario
@@ -71,31 +71,31 @@ if (es_vendedor()) {
         'id'    => 'nav-stock',
         'title' => 'Stock',
         'url'   => 'stock.php',
-        'icon'  => '📦'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-reservas',
         'title' => 'Todas las Reservas',
         'url'   => 'reservas.php',
-        'icon'  => '📑'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 12h6M9 17h4"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-reabastecimiento',
         'title' => 'Alertas de Reabastecimiento',
         'url'   => 'reabastecimiento.php',
-        'icon'  => '⚠️'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-usuarios',
         'title' => 'Gestión de Personal',
         'url'   => 'usuarios.php',
-        'icon'  => '👥'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg>'
     ];
     $nav_items[] = [
         'id'    => 'nav-catalogo',
         'title' => 'Catálogo/Inventario',
         'url'   => 'catalogo.php',
-        'icon'  => '🗂️'
+        'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="M3 7V5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2M3 7h5l2 2h11l-2 12H3L1 7h2Z"/></svg>'
     ];
 }
 
@@ -202,7 +202,7 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
         <?php if (!$es_password_obligatorio): ?>
           <!-- Botón Menú Móvil -->
           <button class="nav-toggle" id="navToggle" aria-label="Abrir menú de navegación">
-            ☰
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
           </button>
         <?php endif; ?>
       </div>
