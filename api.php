@@ -275,7 +275,7 @@ try {
                 }
             } else {
                 // Para otros empleados: validar que el rol sea uno válido
-                if (!in_array($rol, ['VENDEDOR_INTERNO', 'SUPERVISOR_COMERCIAL', 'ADMIN'], true)) {
+                if (!in_array($rol, ['VENDEDOR_INTERNO', 'SUPERVISOR_COMERCIAL'], true)) {
                     http_response_code(400);
                     echo json_encode(['ok' => false, 'error' => 'Rol no válido.'], JSON_UNESCAPED_UNICODE);
                     exit;
