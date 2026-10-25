@@ -119,7 +119,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
       <div class="dashboard-time-badge" title="Zona horaria del servidor">
-        <span>🕒</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
         <span><?= date('d/m/Y - H:i') ?> ART</span>
       </div>
       <span class="badge <?= rol_badge_class() ?>">
@@ -156,7 +156,7 @@ require_once __DIR__ . '/includes/header.php';
       <article class="metric-card metric-card-primary" id="card-stock-disponible">
         <div class="metric-header">
           <span class="metric-label">Stock General Disponible</span>
-          <div class="metric-icon-box metric-icon-primary">📦</div>
+          <div class="metric-icon-box metric-icon-primary"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/></svg></div>
         </div>
         <div class="metric-value-row">
           <span class="metric-value" id="val-stock-disponible"><?= number_format($total_stock_disponible, 0, ',', '.') ?></span>
@@ -177,7 +177,7 @@ require_once __DIR__ . '/includes/header.php';
       <article class="metric-card metric-card-danger" id="card-alertas">
         <div class="metric-header">
           <span class="metric-label">Productos en Alerta</span>
-          <div class="metric-icon-box metric-icon-danger">⚠️</div>
+          <div class="metric-icon-box metric-icon-danger"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div>
         </div>
         <div class="metric-value-row">
           <span class="metric-value" id="val-alertas"><?= $total_alertas ?></span>
@@ -202,7 +202,7 @@ require_once __DIR__ . '/includes/header.php';
           <span class="metric-label">
             <?= es_vendedor() ? 'Mis Reservas Activas' : 'Reservas Activas Globales' ?>
           </span>
-          <div class="metric-icon-box metric-icon-info">⏱️</div>
+          <div class="metric-icon-box metric-icon-info"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2M9 2h6M12 2v4M18 8l2-2"/></svg></div>
         </div>
         <div class="metric-value-row">
           <span class="metric-value" id="val-reservas-activas"><?= $total_reservas_activas ?></span>
@@ -225,7 +225,7 @@ require_once __DIR__ . '/includes/header.php';
           <span class="metric-label">
             <?= es_vendedor() ? 'Mis Solicitudes Pendientes' : 'Pendientes de Autorización' ?>
           </span>
-          <div class="metric-icon-box metric-icon-warning">⏳</div>
+          <div class="metric-icon-box metric-icon-warning"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M5 3h14M5 21h14M7 3v4l5 5-5 5v4M17 3v4l-5 5 5 5v4"/></svg></div>
         </div>
         <div class="metric-value-row">
           <span class="metric-value" id="val-reservas-pendientes"><?= $total_reservas_pendientes ?></span>
@@ -249,7 +249,7 @@ require_once __DIR__ . '/includes/header.php';
       <article class="metric-card metric-card-purple" id="card-empleados-activos">
         <div class="metric-header">
           <span class="metric-label">Personal Activo Registrado</span>
-          <div class="metric-icon-box metric-icon-purple">👥</div>
+          <div class="metric-icon-box metric-icon-purple"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg></div>
         </div>
         <div class="metric-value-row">
           <span class="metric-value" id="val-empleados-activos"><?= $total_empleados_activos ?></span>
@@ -273,7 +273,7 @@ require_once __DIR__ . '/includes/header.php';
     
     <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; box-shadow:var(--shadow-sm);">
       <h2 style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
-        <span>🎯</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg></span>
         <span>Atribuciones de tu Rol: <?= h(rol_label()) ?></span>
       </h2>
       <ul style="list-style:none; display:flex; flex-direction:column; gap:0.6rem; font-size:0.875rem; color:var(--text-muted);">
@@ -299,23 +299,23 @@ require_once __DIR__ . '/includes/header.php';
 
     <div style="background:var(--bg-surface); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; box-shadow:var(--shadow-sm);">
       <h2 style="font-size:1.05rem; font-weight:700; color:var(--text-main); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
-        <span>📌</span>
+        <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
         <span>Acceso Directo a Módulos del Sistema</span>
       </h2>
       <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem;">
         Usa la barra superior de navegación o estos accesos rápidos configurados según tus privilegios:
       </p>
       <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-        <a href="stock.php" class="btn btn-outline btn-sm">📦 Búsqueda de Stock</a>
+        <a href="stock.php" class="btn btn-outline btn-sm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/><path d="m3 8 9 5 9-5M12 13v8M7.5 5.5l9 5"/></svg> Búsqueda de Stock</a>
         <a href="reservas.php" class="btn btn-outline btn-sm">
-          <?= es_vendedor() ? '⏱️ Mis Reservas' : '📑 Todas las Reservas' ?>
+          <?= es_vendedor() ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2M9 2h6M12 2v4M18 8l2-2"/></svg> Mis Reservas' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 12h6M9 17h4"/></svg> Todas las Reservas' ?>
         </a>
         <?php if (!es_vendedor()): ?>
-          <a href="reabastecimiento.php" class="btn btn-outline btn-sm">⚠️ Alertas Reabastecimiento</a>
+          <a href="reabastecimiento.php" class="btn btn-outline btn-sm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg> Alertas Reabastecimiento</a>
         <?php endif; ?>
         <?php if (es_admin()): ?>
-          <a href="usuarios.php" class="btn btn-outline btn-sm">👥 Gestión de Personal</a>
-          <a href="catalogo.php" class="btn btn-outline btn-sm">🗂️ Catálogo/Inventario</a>
+          <a href="usuarios.php" class="btn btn-outline btn-sm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/></svg> Gestión de Personal</a>
+          <a href="catalogo.php" class="btn btn-outline btn-sm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M3 7V5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2M3 7h5l2 2h11l-2 12H3L1 7h2Z"/></svg> Catálogo/Inventario</a>
         <?php endif; ?>
       </div>
     </div>
