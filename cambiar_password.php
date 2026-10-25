@@ -134,7 +134,115 @@ $page_title = ($es_obligatorio ? 'Actualización Obligatoria de Contraseña' : '
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<main class="container" style="max-width: 640px; margin: 2.5rem auto; padding: 0 1rem;">
+<style>
+/* Estilo industrial localizado: cambio de contrasena. */
+body:has(.password-page) {
+  background-color: #e8edf2;
+}
+
+body:has(.password-page) .app-header {
+  background: #17212f;
+  border-bottom-color: #334155;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+body:has(.password-page) .app-header-top {
+  border-bottom-color: #334155;
+}
+
+body:has(.password-page) .app-brand-name,
+body:has(.password-page) .app-header-top .app-user-info strong {
+  color: #f8fafc;
+}
+
+body:has(.password-page) .app-brand-sub,
+body:has(.password-page) .app-header-top .app-user-id,
+body:has(.password-page) .app-header-top .chevron-icon {
+  color: #cbd5e1;
+}
+
+body:has(.password-page) .user-menu-trigger:hover,
+body:has(.password-page) .user-menu-trigger[aria-expanded="true"] {
+  background: #253346;
+  border-color: #475569;
+}
+
+body:has(.password-page) .app-nav-bar {
+  background: #202d3e;
+}
+
+body:has(.password-page) .nav-link {
+  color: #cbd5e1;
+}
+
+body:has(.password-page) .nav-link:hover {
+  background: #2c3c50;
+  color: #ffffff;
+}
+
+body:has(.password-page) .nav-link.active {
+  background: #354031;
+  color: #fcd34d;
+  border-color: #f59e0b;
+}
+
+body:has(.password-page) .app-header-top .nav-toggle,
+body:has(.password-page) .app-header-top .btn-outline {
+  color: #f8fafc;
+  border-color: #64748b;
+  background: #253346;
+}
+
+body:has(.password-page) .app-user-panel {
+  border-top-color: #334155;
+}
+
+body:has(.password-page) .app-header :is(a, button):focus-visible {
+  outline: 2px solid #fcd34d;
+  outline-offset: 3px;
+}
+
+
+.password-page { max-width: 640px; margin: 1.75rem auto; padding: 0 1rem; }
+.password-page .pwd-card {
+  padding: 1.75rem; background: #f8fafc;
+  border: 1px solid #cbd5e1; border-top: 4px solid #b45309;
+  border-radius: 12px; box-shadow: var(--shadow-sm);
+}
+.password-page .pwd-card-header {
+  gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1.25rem;
+  border-bottom-color: #e2e8f0;
+}
+.password-page .pwd-card-title { font-size: 1.25rem; font-weight: 700; line-height: 1.4; }
+.password-page .pwd-card-sub { color: #475569; line-height: 1.6; }
+.password-page .pwd-icon-box { width: 44px; height: 44px; border-radius: 8px; color: #92400e; }
+.password-page .pwd-icon-box svg { width: 24px; height: 24px; }
+.password-page .pwd-user-meta-box,
+.password-page .pwd-requirements-card { background: #edf1f5; border-color: #cbd5e1; }
+.password-page .pwd-user-meta-box { gap: 1rem; flex-wrap: wrap; }
+.password-page .pwd-user-meta-box > div { min-width: 0; overflow-wrap: anywhere; }
+.password-page .form-input { min-height: 46px; font-size: 1rem; background: #fff; padding-right: 3.25rem; }
+.password-page .btn-toggle-eye { width: 44px; height: 44px; right: 1px; padding: 0; }
+.password-page .btn:focus-visible,
+.password-page .btn-toggle-eye:focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+.password-page .pwd-actions-row .btn { min-height: 46px; }
+.password-page .btn-primary { background: #b45309; box-shadow: none; }
+.password-page .btn-primary:hover { background: #92400e; transform: none; }
+.password-page .pwd-requirements-list { color: #475569; line-height: 1.6; }
+.password-page .pwd-requirements-list li { align-items: baseline; }
+.password-page .pwd-requirements-list li.valid,
+.password-page .pwd-requirements-list li.valid .req-bullet { color: #047857; }
+.password-page .req-bullet { flex-shrink: 0; }
+@media (max-width: 600px) {
+  .password-page { margin: 1rem auto; }
+  .password-page .pwd-card { padding: 1.25rem; }
+  .password-page .pwd-card-header { flex-direction: column; gap: 0.75rem; }
+  .password-page .pwd-user-meta-box { align-items: flex-start; flex-direction: column; gap: 0.75rem; }
+  .password-page .pwd-user-meta-box > div { width: 100%; text-align: left !important; }
+  .password-page .pwd-actions-row { flex-direction: column-reverse; align-items: stretch; gap: 0.75rem; }
+}
+</style>
+<main class="container password-page">
 
   <!-- Tarjeta de Contenedor Principal -->
   <div class="pwd-card">
