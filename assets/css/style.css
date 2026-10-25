@@ -1758,3 +1758,119 @@ body {
   align-items: center;
   gap: 1rem;
 }
+
+/* Dashboard: ajuste visual localizado, sin modificar otros modulos. */
+.container:has(> .dashboard-hero) {
+  max-width: 1360px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.container > .dashboard-hero {
+  padding: 1.125rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.dashboard-hero-title {
+  font-size: clamp(1.2rem, 1.8vw, 1.4rem);
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.dashboard-hero-sub {
+  max-width: 78ch;
+  line-height: 1.5;
+}
+
+.container:has(> .dashboard-hero) .metrics-section-title {
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+.container:has(> .dashboard-hero) .metrics-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 225px), 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.container:has(> .dashboard-hero) .metric-card {
+  min-width: 0;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-xs);
+  gap: 0.5rem;
+  justify-content: flex-start;
+  transition: none;
+}
+
+.container:has(> .dashboard-hero) .metric-card:hover {
+  transform: none;
+  box-shadow: var(--shadow-xs);
+}
+
+.container:has(> .dashboard-hero) .metric-card::before {
+  height: 3px;
+}
+
+.container:has(> .dashboard-hero) .metric-header {
+  gap: 0.75rem;
+  min-height: 38px;
+  margin-bottom: 0.5rem;
+  align-items: flex-start;
+}
+
+.container:has(> .dashboard-hero) .metric-label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.container:has(> .dashboard-hero) .metric-icon-box {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.container:has(> .dashboard-hero) .metric-value-row {
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.container:has(> .dashboard-hero) .metric-value {
+  font-size: 2.125rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.container:has(> .dashboard-hero) .metric-formula {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.container:has(> .dashboard-hero) .metric-footer {
+  margin-top: auto;
+  padding-top: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .container > .dashboard-hero {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .container:has(> .dashboard-hero) .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
