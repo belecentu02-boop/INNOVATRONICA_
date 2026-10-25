@@ -2203,3 +2203,37 @@ code, pre, .emp-code-badge, .metric-value, .metric-formula,
 @media (prefers-reduced-motion: reduce) {
   .metrics-grid:has(> #card-stock-disponible) > .metric-card { animation: none; }
 }
+
+/* Estados de envio y navegacion movil. */
+@keyframes ui-submit-spin { to { transform: rotate(360deg); } }
+button.ui-loading { cursor: wait; }
+button.ui-loading::before {
+  content: ''; display: inline-block; flex-shrink: 0;
+  width: 1em; height: 1em; border: 2px solid currentColor;
+  border-right-color: transparent; border-radius: 50%;
+  animation: ui-submit-spin 700ms linear infinite;
+}
+@media (max-width: 768px) {
+  .app-header .app-nav-bar {
+    display: grid; grid-template-rows: 0fr;
+    padding-top: 0; padding-bottom: 0;
+    transition: grid-template-rows 200ms ease-out;
+  }
+  .app-header .app-nav-bar:has(.app-nav-menu.is-active) { grid-template-rows: 1fr; }
+  .app-header .app-nav-menu {
+    display: flex; min-height: 0; overflow: hidden;
+    padding-top: 0; padding-bottom: 0;
+    visibility: hidden; opacity: 0;
+    transition: opacity 160ms ease-out, visibility 0s linear 200ms;
+  }
+  .app-header .app-nav-menu.is-active {
+    visibility: visible; opacity: 1;
+    transition: opacity 160ms ease-out, visibility 0s;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button.ui-loading::before { animation: none; }
+  .app-header .app-nav-bar,
+  .app-header .app-nav-menu,
+  .app-header .app-nav-menu.is-active { transition: none; }
+}

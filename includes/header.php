@@ -201,7 +201,7 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
 
         <?php if (!$es_password_obligatorio): ?>
           <!-- Botón Menú Móvil -->
-          <button class="nav-toggle" id="navToggle" aria-label="Abrir menú de navegación">
+          <button type="button" class="nav-toggle" id="navToggle" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú de navegación">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
           </button>
         <?php endif; ?>

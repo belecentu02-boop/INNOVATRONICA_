@@ -12,17 +12,6 @@
     </div>
   </footer>
 
-  <!-- Script para interactividad de la barra de navegación -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggleBtn = document.getElementById('navToggle');
-      const navMenu = document.getElementById('navMenu');
-      if (toggleBtn && navMenu) {
-        toggleBtn.addEventListener('click', function() {
-          navMenu.classList.toggle('is-active');
-        });
-      }
-    });
-  </script>
+  <script src="assets/js/ui-feedback.js" defer></script>
 </body>
 </html>

@@ -295,7 +295,7 @@ body:has(.password-page) .app-header :is(a, button):focus-visible {
     <?php endif; ?>
 
     <!-- Formulario de Cambio de Contraseña (POST Directo) -->
-    <form method="POST" action="cambiar_password.php" autocomplete="off" id="form-cambio-password">
+    <form data-loading-text="Guardando…" method="POST" action="cambiar_password.php" autocomplete="off" id="form-cambio-password">
       <input type="hidden" name="csrf_token" value="<?= h($csrf_token) ?>">
 
       <!-- Resumen del Usuario Operador -->

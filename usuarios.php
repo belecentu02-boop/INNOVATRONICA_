@@ -901,8 +901,8 @@ require_once __DIR__ . '/includes/header.php';
     formAlta.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-alta');
-      btn.disabled = true;
-      btn.textContent = 'Registrando...';
+      if (btn.disabled) return;
+      window.InnovatronicaUI.setBusy(btn, true, 'Registrando…');
 
       const formData = new FormData(formAlta);
       formData.append('accion', 'crear_usuario');
@@ -926,8 +926,7 @@ require_once __DIR__ . '/includes/header.php';
       } catch (err) {
         showToast('Error de conexión con el servidor.', 'error');
       } finally {
-        btn.disabled = false;
-        btn.textContent = 'Registrar Empleado';
+        window.InnovatronicaUI.setBusy(btn, false);
       }
     });
   }
@@ -1070,8 +1069,8 @@ require_once __DIR__ . '/includes/header.php';
     formEditar.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-editar');
-      btn.disabled = true;
-      btn.textContent = 'Guardando...';
+      if (btn.disabled) return;
+      window.InnovatronicaUI.setBusy(btn, true, 'Guardando…');
 
       const formData = new FormData(formEditar);
       formData.append('accion', 'editar_usuario');
@@ -1101,8 +1100,7 @@ require_once __DIR__ . '/includes/header.php';
       } catch (err) {
         showToast('Error de conexión con el servidor.', 'error');
       } finally {
-        btn.disabled = false;
-        btn.textContent = 'Guardar Cambios';
+        window.InnovatronicaUI.setBusy(btn, false);
       }
     });
   }
@@ -1115,7 +1113,8 @@ require_once __DIR__ . '/includes/header.php';
     formToggle.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-toggle');
-      btn.disabled = true;
+      if (btn.disabled) return;
+      window.InnovatronicaUI.setBusy(btn, true, 'Actualizando…');
 
       const formData = new FormData(formToggle);
       formData.append('accion', 'toggle_activo');
@@ -1138,7 +1137,7 @@ require_once __DIR__ . '/includes/header.php';
       } catch (err) {
         showToast('Error de conexión con el servidor.', 'error');
       } finally {
-        btn.disabled = false;
+        window.InnovatronicaUI.setBusy(btn, false);
       }
     });
   }
@@ -1151,8 +1150,8 @@ require_once __DIR__ . '/includes/header.php';
     formReset.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('btn-submit-reset');
-      btn.disabled = true;
-      btn.textContent = 'Actualizando...';
+      if (btn.disabled) return;
+      window.InnovatronicaUI.setBusy(btn, true, 'Actualizando…');
 
       const formData = new FormData(formReset);
       formData.append('accion', 'reset_password');
@@ -1175,8 +1174,7 @@ require_once __DIR__ . '/includes/header.php';
       } catch (err) {
         showToast('Error de conexión con el servidor.', 'error');
       } finally {
-        btn.disabled = false;
-        btn.textContent = 'Establecer Contraseña';
+        window.InnovatronicaUI.setBusy(btn, false);
       }
     });
   }

@@ -237,7 +237,7 @@ $csrf_token = generar_csrf();
       </div>
     <?php endif; ?>
 
-    <form method="POST" action="login.php" autocomplete="off">
+    <form data-loading-text="Ingresando…" method="POST" action="login.php" autocomplete="off">
       <input type="hidden" name="csrf_token" value="<?= h($csrf_token) ?>">
 
       <div class="form-group" style="margin-bottom: 1rem;">
@@ -274,5 +274,6 @@ $csrf_token = generar_csrf();
 
     <p class="login-access-note"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="flex-shrink:0;"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>Acceso exclusivo para personal autorizado.</span></p>
   </main>
+  <script src="assets/js/ui-feedback.js" defer></script>
 </body>
 </html>
