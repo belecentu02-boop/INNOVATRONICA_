@@ -2185,3 +2185,21 @@ code, pre, .emp-code-badge, .metric-value, .metric-formula,
   font-family: var(--font-code);
   font-variant-numeric: tabular-nums;
 }
+
+/* Entrada de indicadores exclusiva del dashboard. */
+@keyframes dashboard-metric-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card {
+    animation: dashboard-metric-enter 220ms ease-out backwards;
+  }
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card:nth-child(2) { animation-delay: 30ms; }
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card:nth-child(3) { animation-delay: 60ms; }
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card:nth-child(4) { animation-delay: 90ms; }
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card:nth-child(5) { animation-delay: 120ms; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metrics-grid:has(> #card-stock-disponible) > .metric-card { animation: none; }
+}
