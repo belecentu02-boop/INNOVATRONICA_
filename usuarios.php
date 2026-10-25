@@ -55,7 +55,7 @@ $page_title = 'Gestión de Personal · Innovatrónica S.A.';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<main class="container">
+<main class="container usuarios-page">
 
   <!-- Encabezado de la Sección -->
   <div class="dashboard-hero">
@@ -70,7 +70,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <div>
       <button type="button" class="btn btn-primary" id="btn-abrir-alta">
-        <span>➕</span>
+        <span><svg data-ui-icon="0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M12 5v14M5 12h14"/></svg></span>
         <span>Nuevo Empleado</span>
       </button>
     </div>
@@ -81,7 +81,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="metric-card metric-card-purple">
       <div class="metric-header">
         <span class="metric-label">Total Empleados</span>
-        <div class="metric-icon-box metric-icon-purple">👥</div>
+        <div class="metric-icon-box metric-icon-purple"><svg data-ui-icon="1" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M16 3a4 4 0 0 1 0 8M22 21v-2a4 4 0 0 0-3-4"/></svg></div>
       </div>
       <div class="metric-value-row">
         <span class="metric-value" id="kpi-total"><?= $total_personal ?></span>
@@ -95,7 +95,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="metric-card metric-card-success">
       <div class="metric-header">
         <span class="metric-label">Cuentas Activas</span>
-        <div class="metric-icon-box metric-icon-success">✔️</div>
+        <div class="metric-icon-box metric-icon-success"><svg data-ui-icon="2" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
       </div>
       <div class="metric-value-row">
         <span class="metric-value" id="kpi-activos"><?= $total_activos ?></span>
@@ -109,7 +109,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="metric-card metric-card-warning">
       <div class="metric-header">
         <span class="metric-label">Vendedores Internos</span>
-        <div class="metric-icon-box metric-icon-warning">💼</div>
+        <div class="metric-icon-box metric-icon-warning"><svg data-ui-icon="4" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12a20 20 0 0 0 18 0M12 11v4"/></svg></div>
       </div>
       <div class="metric-value-row">
         <span class="metric-value" id="kpi-vendedores"><?= $total_vendedores ?></span>
@@ -123,7 +123,7 @@ require_once __DIR__ . '/includes/header.php';
     <div class="metric-card metric-card-info">
       <div class="metric-header">
         <span class="metric-label">Supervisores Comerciales</span>
-        <div class="metric-icon-box metric-icon-info">🛡️</div>
+        <div class="metric-icon-box metric-icon-info"><svg data-ui-icon="5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg></div>
       </div>
       <div class="metric-value-row">
         <span class="metric-value" id="kpi-supervisores"><?= $total_supervisores ?></span>
@@ -139,7 +139,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="usuarios-toolbar">
     <div class="toolbar-filters">
       <div class="search-input-wrap">
-        <span class="search-input-icon">🔍</span>
+        <span class="search-input-icon"><svg data-ui-icon="6" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></span>
         <input 
           type="text" 
           id="filtro-busqueda" 
@@ -164,7 +164,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <div style="font-size: 0.85rem; color: var(--text-muted);">
-      Mostrando <strong id="conteo-filtrados"><?= count($usuarios) ?></strong> de <?= count($usuarios) ?> empleados
+      Resultados: <strong id="conteo-filtrados"><?= count($usuarios) ?></strong> de <span id="conteo-total"><?= count($usuarios) ?></span> empleados
     </div>
   </div>
 
@@ -236,7 +236,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php if ($debe_cambiar): ?>
                   <div style="margin-top: 0.35rem;">
                     <span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;" title="El empleado tiene pendiente el cambio de contraseña obligatorio">
-                      <span>⚠️ Clave pendiente</span>
+                      <span><svg data-ui-icon="7" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg> Clave pendiente</span>
                     </span>
                   </div>
                 <?php endif; ?>
@@ -254,7 +254,7 @@ require_once __DIR__ . '/includes/header.php';
                     class="btn-action btn-action-edit btn-trigger-edit" 
                     title="Editar información del empleado"
                   >
-                    <span>✏️</span>
+                    <span><svg data-ui-icon="8" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m16 3 5 5-12 12-6 1 1-6L16 3ZM13 6l5 5"/></svg></span>
                     <span>Editar</span>
                   </button>
 
@@ -264,7 +264,7 @@ require_once __DIR__ . '/includes/header.php';
                     class="btn-action btn-action-key btn-trigger-reset" 
                     title="Resetear contraseña y desbloquear"
                   >
-                    <span>🔑</span>
+                    <span><svg data-ui-icon="9" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m11 12 10-10M16 7l3 3 2-2-3-3"/></svg></span>
                     <span>Clave</span>
                   </button>
 
@@ -276,7 +276,7 @@ require_once __DIR__ . '/includes/header.php';
                       disabled 
                       title="No puedes desactivar tu propia cuenta administradora"
                     >
-                      <span>🔒</span>
+                      <span><svg data-ui-icon="10" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span>
                     </button>
                   <?php elseif ($es_activo): ?>
                     <button 
@@ -285,7 +285,7 @@ require_once __DIR__ . '/includes/header.php';
                       data-target-activo="0" 
                       title="Desactivar cuenta del empleado"
                     >
-                      <span>⛔</span>
+                      <span><svg data-ui-icon="11" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg></span>
                       <span>Desactivar</span>
                     </button>
                   <?php else: ?>
@@ -295,7 +295,7 @@ require_once __DIR__ . '/includes/header.php';
                       data-target-activo="1" 
                       title="Reactivar cuenta del empleado"
                     >
-                      <span>✅</span>
+                      <span><svg data-ui-icon="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span>
                       <span>Activar</span>
                     </button>
                   <?php endif; ?>
@@ -309,15 +309,58 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- Mensaje sin resultados de filtro -->
     <div id="sin-resultados" style="display: none; padding: 2.5rem; text-align: center; color: var(--text-muted);">
-      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+      <div style="font-size: 2rem; margin-bottom: 0.5rem;"><svg data-ui-icon="6" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></div>
       <p style="font-weight: 600;">No se encontraron empleados con los criterios de búsqueda seleccionados.</p>
     </div>
+
+  <nav class="usuarios-paginacion" id="usuarios-paginacion" aria-label="Paginación de usuarios" hidden>
+    <p id="usuarios-pagina-info" aria-live="polite" aria-atomic="true"></p>
+    <div class="usuarios-paginacion-controles">
+      <button type="button" class="btn btn-outline btn-sm" id="usuarios-anterior" aria-controls="tbody-usuarios">Anterior</button>
+      <span id="usuarios-pagina-numero"></span>
+      <button type="button" class="btn btn-outline btn-sm" id="usuarios-siguiente" aria-controls="tbody-usuarios">Siguiente</button>
+    </div>
+  </nav>
+  </div><!-- /table-card: tabla, estado vacio y paginacion -->
 </main>
 
 <!-- ============================================================
      ESTILOS DIRECTOS DE RESPALDO PARA MODALES (Inmunidad a caché)
      ============================================================ -->
 <style>
+/* Ajustes visuales exclusivos de Gestion de Personal. */
+.usuarios-page .usuarios-toolbar {
+  background: #f4f6f8;
+  border-color: #cbd5e1;
+  border-radius: 12px;
+  box-shadow: none;
+  padding: 1rem;
+}
+.usuarios-page .toolbar-filters { min-width: 0; }
+.usuarios-page .search-input-wrap { min-width: min(260px, 100%); }
+.usuarios-page .table-card {
+  border-color: #cbd5e1;
+  border-radius: 12px;
+  box-shadow: var(--shadow-xs);
+}
+.usuarios-page .data-table th {
+  background: #edf1f5;
+  color: #475569;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+  padding: 0.85rem 1rem;
+}
+.usuarios-page .data-table td { padding: 0.85rem 1rem; }
+.usuarios-page .data-table tbody tr:hover { background: #f8fafc; }
+.usuarios-page .metric-icon-box svg { width: 22px; height: 22px; }
+.usuarios-page .btn-action { min-height: 36px; }
+@media (max-width: 768px) {
+  .usuarios-page .toolbar-filters { width: 100%; }
+  .usuarios-page .search-input-wrap { max-width: none; width: 100%; flex-basis: 100%; }
+  .usuarios-page .toolbar-select { min-width: 0; max-width: 100%; flex: 1 1 150px; }
+  .usuarios-page .btn-action { min-height: 44px; }
+}
+
 .custom-modal-backdrop {
   display: none;
   position: fixed !important;
@@ -350,6 +393,158 @@ require_once __DIR__ . '/includes/header.php';
   z-index: 100000 !important;
   margin: auto !important;
 }
+
+/* Lista y filtros de personal adaptados a telefono. */
+@media (max-width: 768px) {
+  .usuarios-page .usuarios-toolbar,
+  .usuarios-page .toolbar-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    width: 100%;
+    min-width: 0;
+  }
+  .usuarios-page .search-input-wrap {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .usuarios-page .toolbar-select,
+  .usuarios-page .search-input-wrap .form-input {
+    width: 100%;
+    min-width: 0;
+    height: 44px;
+    font-size: 1rem;
+  }
+  .usuarios-page .table-card {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .usuarios-page .table-responsive { overflow: visible; }
+  .usuarios-page .data-table,
+  .usuarios-page .data-table tbody {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+  .usuarios-page .data-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .usuarios-page .data-table tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: var(--shadow-xs);
+  }
+  .usuarios-page .data-table tbody tr:hover { background: #ffffff; }
+  .usuarios-page .data-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    padding: 0.4rem 0;
+    text-align: left !important;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .usuarios-page .data-table td:nth-child(2) {
+    order: -1;
+    padding-top: 0;
+    padding-bottom: 0.75rem;
+    margin-bottom: 0.35rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .usuarios-page .user-cell-name { font-size: 1rem; }
+  .usuarios-page .data-table td::before {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #475569;
+  }
+  .usuarios-page .data-table td:nth-child(1)::before { content: 'Legajo'; }
+  .usuarios-page .data-table td:nth-child(3)::before { content: 'Rol'; }
+  .usuarios-page .data-table td:nth-child(4)::before { content: 'Estado'; }
+  .usuarios-page .data-table td:nth-child(5)::before { content: 'Fecha de alta'; }
+  .usuarios-page .data-table .badge,
+  .usuarios-page .data-table .emp-code-badge { white-space: normal; }
+  .usuarios-page .data-table td:last-child {
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e2e8f0;
+  }
+  .usuarios-page .table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start !important;
+    gap: 0.5rem;
+  }
+  .usuarios-page .table-actions .btn-action {
+    flex: 1 1 auto;
+    min-height: 44px;
+    justify-content: center;
+  }
+}
+
+.usuarios-page .usuarios-paginacion:not([hidden]) {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.75rem; margin: 1rem 0 1.5rem;
+  font-size: 0.875rem; color: #475569;
+}
+.usuarios-page .usuarios-paginacion-controles {
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.usuarios-page .usuarios-paginacion button { min-height: 44px; }
+.usuarios-page .usuarios-paginacion button:disabled { opacity: 0.45; cursor: default; }
+@media (max-width: 768px) {
+  .usuarios-page .usuarios-paginacion-controles { width: 100%; justify-content: space-between; }
+}
+
+/* Pie de tabla de escritorio; conserva la paginacion movil. */
+@media (min-width: 769px) {
+  .usuarios-page .usuarios-paginacion:not([hidden]) {
+    margin: 0;
+    padding: 0.85rem 1rem;
+    min-height: 64px;
+    background: #f4f6f8;
+    border: 0;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .usuarios-page .usuarios-paginacion p { margin: 0; }
+  .usuarios-page .usuarios-paginacion-controles {
+    margin-left: auto;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .usuarios-page .usuarios-paginacion button {
+    min-height: 36px;
+    padding: 0.45rem 0.85rem;
+    background: #ffffff;
+  }
+  .usuarios-page .usuarios-paginacion button:not(:disabled):hover {
+    background: #e2e8f0;
+  }
+  .usuarios-page #usuarios-pagina-numero {
+    min-width: 3.5rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+}
 </style>
 
 <!-- ============================================================
@@ -361,7 +556,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="custom-modal">
     <div class="custom-modal-header">
       <h2 class="custom-modal-title" id="modal-alta-title">
-        <span>➕</span>
+        <span><svg data-ui-icon="0" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="M12 5v14M5 12h14"/></svg></span>
         <span>Registrar Nuevo Empleado</span>
       </h2>
       <button type="button" class="custom-modal-close" data-close-modal="modal-alta" aria-label="Cerrar modal">&times;</button>
@@ -440,7 +635,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="custom-modal">
     <div class="custom-modal-header">
       <h2 class="custom-modal-title" id="modal-editar-title">
-        <span>✏️</span>
+        <span><svg data-ui-icon="8" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m16 3 5 5-12 12-6 1 1-6L16 3ZM13 6l5 5"/></svg></span>
         <span>Editar Datos del Empleado</span>
       </h2>
       <button type="button" class="custom-modal-close" data-close-modal="modal-editar" aria-label="Cerrar modal">&times;</button>
@@ -495,7 +690,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <div id="edit-self-warning" class="modal-alert modal-alert-info" style="display: none;">
-          <span>ℹ️</span>
+          <span><svg data-ui-icon="12" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg></span>
           <span>Estás editando tu propia cuenta administradora. No puedes modificar tu rol ni desactivar tu propio acceso.</span>
         </div>
       </div>
@@ -515,7 +710,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="custom-modal" style="max-width: 460px;">
     <div class="custom-modal-header">
       <h2 class="custom-modal-title" id="modal-toggle-title">
-        <span id="toggle-header-icon">⛔</span>
+        <span id="toggle-header-icon"><svg data-ui-icon="11" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg></span>
         <span id="toggle-header-text">Desactivar Cuenta</span>
       </h2>
       <button type="button" class="custom-modal-close" data-close-modal="modal-toggle-estado" aria-label="Cerrar modal">&times;</button>
@@ -528,7 +723,7 @@ require_once __DIR__ . '/includes/header.php';
 
       <div class="custom-modal-body">
         <div id="toggle-alert-box" class="modal-alert modal-alert-danger">
-          <span id="toggle-icon-desc">⚠️</span>
+          <span id="toggle-icon-desc"><svg data-ui-icon="7" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></span>
           <div id="toggle-desc-text"></div>
         </div>
         <p style="font-size: 0.85rem; color: var(--text-muted);">
@@ -551,7 +746,7 @@ require_once __DIR__ . '/includes/header.php';
   <div class="custom-modal" style="max-width: 480px;">
     <div class="custom-modal-header">
       <h2 class="custom-modal-title" id="modal-reset-title">
-        <span>🔑</span>
+        <span><svg data-ui-icon="9" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m11 12 10-10M16 7l3 3 2-2-3-3"/></svg></span>
         <span>Resetear Contraseña de Empleado</span>
       </h2>
       <button type="button" class="custom-modal-close" data-close-modal="modal-reset-clave" aria-label="Cerrar modal">&times;</button>
@@ -586,7 +781,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <div class="modal-alert modal-alert-info">
-          <span>🛡️</span>
+          <span><svg data-ui-icon="5" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Z"/><path d="m8 12 3 3 5-6"/></svg></span>
           <span>El cambio se auditará en <code>log_acciones</code> sin registrar nunca la contraseña en texto plano.</span>
         </div>
       </div>
@@ -623,7 +818,7 @@ require_once __DIR__ . '/includes/header.php';
     toast.className = `toast toast-${tipo}`;
     
     const icon = document.createElement('span');
-    icon.textContent = (tipo === 'success') ? '✅' : '⚠️';
+    icon.innerHTML = (tipo === 'success') ? '<svg data-ui-icon="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>' : '<svg data-ui-icon="7" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg>';
     
     const text = document.createElement('span');
     text.textContent = mensaje;
@@ -845,14 +1040,14 @@ require_once __DIR__ . '/includes/header.php';
         const submitBtnText = document.getElementById('toggle-btn-text');
 
         if (nuevoActivo === 0) {
-          headerIcon.textContent = '⛔';
+          headerIcon.innerHTML = '<svg data-ui-icon="11" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg>';
           headerText.textContent = 'Desactivar Cuenta';
           descBox.className = 'modal-alert modal-alert-danger';
           establecerDescripcionToggle(descText, nombre, codigo, true);
           submitBtn.className = 'btn btn-primary btn-action-danger';
           submitBtnText.textContent = 'Sí, Desactivar Cuenta';
         } else {
-          headerIcon.textContent = '✅';
+          headerIcon.innerHTML = '<svg data-ui-icon="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>';
           headerText.textContent = 'Reactivar Cuenta';
           descBox.className = 'modal-alert modal-alert-info';
           establecerDescripcionToggle(descText, nombre, codigo, false);
@@ -995,42 +1190,49 @@ require_once __DIR__ . '/includes/header.php';
   const conteoFiltrados = document.getElementById('conteo-filtrados');
   const sinResultados = document.getElementById('sin-resultados');
 
-  function aplicarFiltros() {
+  const TAMANO_PAGINA = 5;
+  let paginaActual = 1;
+  const paginacion = document.getElementById('usuarios-paginacion');
+  const anterior = document.getElementById('usuarios-anterior');
+  const siguiente = document.getElementById('usuarios-siguiente');
+
+  function aplicarFiltros(reiniciarPagina = false) {
+    if (reiniciarPagina) paginaActual = 1;
     const query = inputBusqueda.value.trim().toLowerCase();
     const filtroRolVal = selectRol.value;
     const filtroEstadoVal = selectEstado.value;
-
-    const rows = document.querySelectorAll('#tbody-usuarios tr');
-    let visibles = 0;
-
-    rows.forEach(row => {
+    const rows = Array.from(document.querySelectorAll('#tbody-usuarios tr'));
+    const resultados = rows.filter(row => {
       const codigo = (row.dataset.codigo || '').toLowerCase();
       const nombre = (row.dataset.nombre || '').toLowerCase();
       const usuario = (row.dataset.usuario || '').toLowerCase();
-      const rol = row.dataset.rol || '';
-      const activo = row.dataset.activo || '';
-
-      const matchTexto = (!query || codigo.includes(query) || nombre.includes(query) || usuario.includes(query));
-      const matchRol = (!filtroRolVal || rol === filtroRolVal);
-      const matchEstado = (filtroEstadoVal === '' || activo === filtroEstadoVal);
-
-      if (matchTexto && matchRol && matchEstado) {
-        row.style.display = '';
-        visibles++;
-      } else {
-        row.style.display = 'none';
-      }
+      return (!query || codigo.includes(query) || nombre.includes(query) || usuario.includes(query))
+        && (!filtroRolVal || row.dataset.rol === filtroRolVal)
+        && (filtroEstadoVal === '' || row.dataset.activo === filtroEstadoVal);
     });
-
-    if (conteoFiltrados) conteoFiltrados.textContent = visibles;
-    if (sinResultados) {
-      sinResultados.style.display = (visibles === 0) ? 'block' : 'none';
-    }
+    const totalPaginas = Math.max(1, Math.ceil(resultados.length / TAMANO_PAGINA));
+    paginaActual = Math.min(Math.max(1, paginaActual), totalPaginas);
+    const inicio = (paginaActual - 1) * TAMANO_PAGINA;
+    rows.forEach(row => { row.style.display = 'none'; });
+    resultados.slice(inicio, inicio + TAMANO_PAGINA).forEach(row => { row.style.display = ''; });
+    conteoFiltrados.textContent = resultados.length;
+    document.getElementById('conteo-total').textContent = rows.length;
+    sinResultados.style.display = resultados.length === 0 ? 'block' : 'none';
+    paginacion.hidden = resultados.length === 0;
+    document.getElementById('usuarios-pagina-info').textContent = resultados.length
+      ? `Mostrando ${inicio + 1}–${Math.min(inicio + TAMANO_PAGINA, resultados.length)} de ${resultados.length} resultados`
+      : 'Sin resultados';
+    document.getElementById('usuarios-pagina-numero').textContent = `${paginaActual} / ${totalPaginas}`;
+    anterior.disabled = paginaActual === 1;
+    siguiente.disabled = paginaActual === totalPaginas;
   }
 
-  if (inputBusqueda) inputBusqueda.addEventListener('input', aplicarFiltros);
-  if (selectRol) selectRol.addEventListener('change', aplicarFiltros);
-  if (selectEstado) selectEstado.addEventListener('change', aplicarFiltros);
+  inputBusqueda.addEventListener('input', () => aplicarFiltros(true));
+  selectRol.addEventListener('change', () => aplicarFiltros(true));
+  selectEstado.addEventListener('change', () => aplicarFiltros(true));
+  anterior.addEventListener('click', () => { paginaActual--; aplicarFiltros(); });
+  siguiente.addEventListener('click', () => { paginaActual++; aplicarFiltros(); });
+  aplicarFiltros();
 
   // ------------------------------------------------------------
   // 8. Recarga Dinámica de la Tabla vía api.php?accion=listar_usuarios
@@ -1079,11 +1281,11 @@ require_once __DIR__ . '/includes/header.php';
         // Action buttons
         let toggleBtnHtml = '';
         if (isSelf) {
-          toggleBtnHtml = `<button type="button" class="btn-action" disabled title="No puedes desactivar tu propia cuenta"><span>🔒</span></button>`;
+          toggleBtnHtml = `<button type="button" class="btn-action" disabled title="No puedes desactivar tu propia cuenta"><span><svg data-ui-icon="10" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/></svg></span></button>`;
         } else if (isActivo) {
-          toggleBtnHtml = `<button type="button" class="btn-action btn-action-danger btn-trigger-toggle" data-target-activo="0" title="Desactivar cuenta"><span>⛔</span><span>Desactivar</span></button>`;
+          toggleBtnHtml = `<button type="button" class="btn-action btn-action-danger btn-trigger-toggle" data-target-activo="0" title="Desactivar cuenta"><span><svg data-ui-icon="11" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg></span><span>Desactivar</span></button>`;
         } else {
-          toggleBtnHtml = `<button type="button" class="btn-action btn-action-success btn-trigger-toggle" data-target-activo="1" title="Reactivar cuenta"><span>✅</span><span>Activar</span></button>`;
+          toggleBtnHtml = `<button type="button" class="btn-action btn-action-success btn-trigger-toggle" data-target-activo="1" title="Reactivar cuenta"><span><svg data-ui-icon="3" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></span><span>Activar</span></button>`;
         }
 
         // Construir celdas de forma segura
@@ -1121,7 +1323,7 @@ require_once __DIR__ . '/includes/header.php';
           ? `<span class="badge-status badge-status-active"><span class="status-dot"></span><span>Activo</span></span>`
           : `<span class="badge-status badge-status-inactive"><span class="status-dot"></span><span>Inactivo</span></span>`;
         if (debeCambiar) {
-          estadoHtml += `<div style="margin-top: 0.35rem;"><span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;" title="El empleado tiene pendiente el cambio de contraseña obligatorio"><span>⚠️ Clave pendiente</span></span></div>`;
+          estadoHtml += `<div style="margin-top: 0.35rem;"><span class="badge badge-warning" style="font-size: 0.7rem; padding: 0.15rem 0.5rem;" title="El empleado tiene pendiente el cambio de contraseña obligatorio"><span><svg data-ui-icon="7" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg> Clave pendiente</span></span></div>`;
         }
         tdEstado.innerHTML = estadoHtml;
 
@@ -1135,10 +1337,10 @@ require_once __DIR__ . '/includes/header.php';
         tdAcciones.innerHTML = `
           <div class="table-actions" style="justify-content: flex-end;">
             <button type="button" class="btn-action btn-action-edit btn-trigger-edit" title="Editar empleado">
-              <span>✏️</span><span>Editar</span>
+              <span><svg data-ui-icon="8" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><path d="m16 3 5 5-12 12-6 1 1-6L16 3ZM13 6l5 5"/></svg></span><span>Editar</span>
             </button>
             <button type="button" class="btn-action btn-action-key btn-trigger-reset" title="Resetear contraseña">
-              <span>🔑</span><span>Clave</span>
+              <span><svg data-ui-icon="9" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:inline-block;vertical-align:middle;flex-shrink:0;"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m11 12 10-10M16 7l3 3 2-2-3-3"/></svg></span><span>Clave</span>
             </button>
             ${toggleBtnHtml}
           </div>
