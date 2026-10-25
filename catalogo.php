@@ -14,14 +14,14 @@ $page_title = 'Catálogo e Inventario · Innovatrónica S.A.';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<main class="container">
+<main class="container module-page">
   <div class="coming-soon-card">
     <div class="coming-soon-badge-fase">
-      <span>🚀</span>
-      <span>Fase 4: Catálogo y Gestión de Inventario</span>
+      <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
+      <span>En desarrollo · Fase 4: Catálogo y Gestión de Inventario</span>
     </div>
 
-    <span class="coming-soon-icon">🗂️</span>
+    <span class="coming-soon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ><path d="M3 7V5a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v2M3 7h5l2 2h11l-2 12H3L1 7h2Z"/></svg></span>
 
     <h1 class="coming-soon-title">Administración de Catálogo e Inventario</h1>
 
@@ -41,7 +41,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div>
       <a href="index.php" class="btn btn-primary" id="btn-back-dashboard">
-        ← Volver al Dashboard
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 5-7 7 7 7M5 12h14"/></svg> Volver al Dashboard
       </a>
     </div>
   </div>

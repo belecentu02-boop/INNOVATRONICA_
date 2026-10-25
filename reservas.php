@@ -14,14 +14,14 @@ $page_title = $es_solo_vendedor ? 'Mis Reservas · Innovatrónica S.A.' : 'Todas
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<main class="container">
+<main class="container module-page">
   <div class="coming-soon-card">
     <div class="coming-soon-badge-fase">
-      <span>🚀</span>
-      <span>Fase 5: Reservas, Temporizador y Aprobaciones</span>
+      <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
+      <span>En desarrollo · Fase 5: Reservas, Temporizador y Aprobaciones</span>
     </div>
 
-    <span class="coming-soon-icon">⏱️</span>
+    <span class="coming-soon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ><circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2M9 2h6M12 2v4M18 8l2-2"/></svg></span>
 
     <h1 class="coming-soon-title">
       <?= $es_solo_vendedor ? 'Mis Reservas Comerciales' : 'Gestión Integral de Reservas' ?>
@@ -45,7 +45,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div>
       <a href="index.php" class="btn btn-primary" id="btn-back-dashboard">
-        ← Volver al Dashboard
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 5-7 7 7 7M5 12h14"/></svg> Volver al Dashboard
       </a>
     </div>
   </div>

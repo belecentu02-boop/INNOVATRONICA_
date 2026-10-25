@@ -8,14 +8,14 @@ $page_title = 'Alertas de Reabastecimiento · Innovatrónica S.A.';
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<main class="container">
+<main class="container module-page">
   <div class="coming-soon-card">
     <div class="coming-soon-badge-fase">
-      <span>🚀</span>
-      <span>Fase 4: Catálogo y Alertas de Reabastecimiento</span>
+      <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
+      <span>En desarrollo · Fase 4: Catálogo y Alertas de Reabastecimiento</span>
     </div>
 
-    <span class="coming-soon-icon">⚠️</span>
+    <span class="coming-soon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></span>
 
     <h1 class="coming-soon-title">Alertas de Reabastecimiento Crítico</h1>
 
@@ -35,7 +35,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <div>
       <a href="index.php" class="btn btn-primary" id="btn-back-dashboard">
-        ← Volver al Dashboard
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 5-7 7 7 7M5 12h14"/></svg> Volver al Dashboard
       </a>
     </div>
   </div>

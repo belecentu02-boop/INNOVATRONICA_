@@ -1875,69 +1875,69 @@ body {
   }
 }
 
-/* Variante industrial tecnologica: prueba limitada al dashboard. */
-body:has(.dashboard-hero) {
+/* Identidad industrial compartida por las pantallas con cabecera. */
+body:has(> .app-header) {
   background-color: #e8edf2;
 }
 
-body:has(.dashboard-hero) .app-header {
+body:has(> .app-header) .app-header {
   background: #17212f;
   border-bottom-color: #334155;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
 }
 
-body:has(.dashboard-hero) .app-header-top {
+body:has(> .app-header) .app-header-top {
   border-bottom-color: #334155;
 }
 
-body:has(.dashboard-hero) .app-brand-name,
-body:has(.dashboard-hero) .app-header-top .app-user-info strong {
+body:has(> .app-header) .app-brand-name,
+body:has(> .app-header) .app-header-top .app-user-info strong {
   color: #f8fafc;
 }
 
-body:has(.dashboard-hero) .app-brand-sub,
-body:has(.dashboard-hero) .app-header-top .app-user-id,
-body:has(.dashboard-hero) .app-header-top .chevron-icon {
+body:has(> .app-header) .app-brand-sub,
+body:has(> .app-header) .app-header-top .app-user-id,
+body:has(> .app-header) .app-header-top .chevron-icon {
   color: #cbd5e1;
 }
 
-body:has(.dashboard-hero) .user-menu-trigger:hover,
-body:has(.dashboard-hero) .user-menu-trigger[aria-expanded="true"] {
+body:has(> .app-header) .user-menu-trigger:hover,
+body:has(> .app-header) .user-menu-trigger[aria-expanded="true"] {
   background: #253346;
   border-color: #475569;
 }
 
-body:has(.dashboard-hero) .app-nav-bar {
+body:has(> .app-header) .app-nav-bar {
   background: #202d3e;
 }
 
-body:has(.dashboard-hero) .nav-link {
+body:has(> .app-header) .nav-link {
   color: #cbd5e1;
 }
 
-body:has(.dashboard-hero) .nav-link:hover {
+body:has(> .app-header) .nav-link:hover {
   background: #2c3c50;
   color: #ffffff;
 }
 
-body:has(.dashboard-hero) .nav-link.active {
+body:has(> .app-header) .nav-link.active {
   background: #354031;
   color: #fcd34d;
   border-color: #f59e0b;
 }
 
-body:has(.dashboard-hero) .app-header-top .nav-toggle,
-body:has(.dashboard-hero) .app-header-top .btn-outline {
+body:has(> .app-header) .app-header-top .nav-toggle,
+body:has(> .app-header) .app-header-top .btn-outline {
   color: #f8fafc;
   border-color: #64748b;
   background: #253346;
 }
 
-body:has(.dashboard-hero) .app-user-panel {
+body:has(> .app-header) .app-user-panel {
   border-top-color: #334155;
 }
 
-body:has(.dashboard-hero) .app-header :is(a, button):focus-visible {
+body:has(> .app-header) .app-header :is(a, button):focus-visible {
   outline: 2px solid #fcd34d;
   outline-offset: 3px;
 }
@@ -2029,4 +2029,50 @@ body:has(.dashboard-hero) .app-header :is(a, button):focus-visible {
     padding-top: 0;
     padding-bottom: 0;
   }
+}
+
+/* Modulos pendientes: componentes compartidos del estilo industrial. */
+.module-page { max-width: 960px; }
+.module-page .coming-soon-card {
+  max-width: 760px; margin: 0 auto 1.5rem; padding: 2rem;
+  background: #f8fafc; border: 1px solid #cbd5e1;
+  border-top: 4px solid #b45309; border-radius: 12px;
+  box-shadow: var(--shadow-sm); text-align: left;
+}
+.module-page .coming-soon-badge-fase {
+  max-width: 100%; white-space: normal;
+  background: #edf1f5; color: #475569; border-color: #cbd5e1;
+  border-radius: 6px; padding: .35rem .65rem; margin-bottom: 1.25rem;
+}
+.module-page .coming-soon-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; margin-bottom: 1rem;
+  background: #fef3c7; color: #92400e; border-radius: 10px;
+}
+.module-page .coming-soon-icon svg { width: 26px; height: 26px; }
+.module-page .coming-soon-title {
+  font-size: clamp(1.25rem, 2.5vw, 1.65rem); line-height: 1.35;
+  font-weight: 700; margin-bottom: .75rem;
+}
+.module-page .coming-soon-desc {
+  max-width: none; margin: 0 0 1.5rem; color: #475569;
+  font-size: .9375rem; line-height: 1.7;
+}
+.module-page .coming-soon-specs {
+  max-width: none; margin: 0 0 1.5rem; padding: 1.25rem;
+  background: #edf1f5; border: 1px solid #cbd5e1; border-radius: 8px;
+}
+.module-page .coming-soon-specs-title { color: #334155; }
+.module-page .coming-soon-specs-list { color: #475569; gap: .65rem; line-height: 1.6; }
+.module-page .coming-soon-specs-list li { overflow-wrap: anywhere; }
+.module-page .coming-soon-specs-list li::before { content: none; }
+.module-page .btn-primary { background: #b45309; box-shadow: none; min-height: 44px; }
+.module-page .btn-primary:hover { background: #92400e; transform: none; }
+.module-page .btn:focus-visible { outline: 3px solid #b45309; outline-offset: 3px; }
+.module-page svg { flex-shrink: 0; vertical-align: middle; }
+@media (max-width: 600px) {
+  .module-page { margin: 1rem auto; padding: 0 1rem; }
+  .module-page .coming-soon-card { padding: 1.25rem; }
+  .module-page .coming-soon-specs { padding: 1rem; }
+  .module-page .btn-primary { width: 100%; }
 }
