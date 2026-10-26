@@ -122,3 +122,14 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Vencimientos y auditoría atómicos, actor de sistema NULL e idempotencia; rollback ante error. No se altera inventario físico.
 - Los saldos negativos se señalan como inconsistencias.
 - Pruebas aisladas SQLite: 28 comprobaciones. La simulación no acredita bloqueos MySQL ni sustituye prueba de integración WAMP. Ver plan en fase4_stock.md.
+
+
+## Fase 4 — Alertas de reabastecimiento
+
+- Pantalla y endpoint listar_alertas restringidos a ADMIN y SUPERVISOR_COMERCIAL. VENDEDOR_INTERNO recibe 403 desde el backend aunque conozca la URL.
+- Solo GET; sesión activa y cambio obligatorio de contraseña; se preserva CSRF de POST y permisos administrativos existentes.
+- Reutiliza cálculo transaccional, expiración y auditoría de Stock. La selección disponible <= mínimo se impone en servidor y no puede desactivarse por parámetros.
+- Fórmula por componente: (mínimo × 2) − disponible. Los saldos negativos son inconsistencias explícitas que requieren revisión.
+- Consultas preparadas; datos mostrados con textContent; SVG de ubicación fijo; sin HTML de productos.
+- Verificado: sintaxis PHP y JavaScript, 38 comprobaciones aisladas SQLite, 12 casos API con autenticación simulada y prueba DOM de columna sugerida, XSS, filtros y paginación.
+- No se acreditan bloqueos/concurrencia MySQL con SQLite. Integración y presentación en WAMP pendientes de confirmación del usuario.

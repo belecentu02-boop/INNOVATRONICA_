@@ -70,9 +70,10 @@ if (!is_string($accion_recibida)) {
 }
 $accion = trim($accion_recibida);
 
-// Solo listar_stock se habilita a los tres roles. Usuarios y catálogo siguen siendo ADMIN.
+// Stock: tres roles. Alertas: ADMIN y SUPERVISOR. Catálogo y usuarios: ADMIN.
 $consulta_stock = $accion === 'listar_stock' && (es_admin() || es_supervisor() || es_vendedor());
-if (!es_admin() && !$consulta_stock) {
+$consulta_alertas = $accion === 'listar_alertas' && (es_admin() || es_supervisor());
+if (!es_admin() && !$consulta_stock && !$consulta_alertas) {
     http_response_code(403);
     echo json_encode(['ok' => false, 'error' => 'Acceso denegado (403): Se requieren permisos de Administrador General para operar esta API.'], JSON_UNESCAPED_UNICODE);
     exit;
@@ -83,6 +84,7 @@ $current_admin_id = (int)($_SESSION['u']['id_empleado'] ?? 0);
 try {
     switch ($accion) {
 
+        case 'listar_alertas':
         case 'listar_stock':
             header('Cache-Control: no-store');
             if ($method !== 'GET') {
@@ -94,7 +96,7 @@ try {
             define('INNOVATRONICA_STOCK_API', true);
             require_once __DIR__ . '/includes/stock.php';
             try {
-                echo json_encode(stock_listar($pdo, $params), JSON_UNESCAPED_UNICODE);
+                echo json_encode(stock_listar($pdo, $params, $accion === 'listar_alertas'), JSON_UNESCAPED_UNICODE);
             } catch (StockError $e) {
                 http_response_code(422);
                 echo json_encode(['ok' => false, 'error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);

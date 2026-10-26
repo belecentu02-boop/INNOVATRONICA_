@@ -1,44 +1,53 @@
 <?php
-/**
- * Innovatrónica S.A. - Sistema de Control de Stock
- * Módulo: Interfaz de Alertas de Reabastecimiento (Próximamente - Fase 4)
- */
-
+/** Fase 4: alertas para administración y supervisión. */
+require_once __DIR__ . '/includes/auth.php';
+requerir_rol(['ADMIN', 'SUPERVISOR_COMERCIAL']);
 $page_title = 'Alertas de Reabastecimiento · Innovatrónica S.A.';
 require_once __DIR__ . '/includes/header.php';
 ?>
-
-<main class="container module-page">
-  <div class="coming-soon-card">
-    <div class="coming-soon-badge-fase">
-      <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
-      <span>En desarrollo · Fase 4: Catálogo y Alertas de Reabastecimiento</span>
+<link rel="stylesheet" href="assets/css/stock.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/stock.css') ?>">
+<main class="container stock-page">
+  <section class="dashboard-hero" aria-labelledby="stock-titulo">
+    <div><h1 class="dashboard-hero-title" id="stock-titulo">Alertas de reabastecimiento</h1>
+    <p class="dashboard-hero-sub">Priorizá los componentes que necesitan reposición.</p></div>
+    <button type="button" class="btn btn-outline" id="stock-recargar">Actualizar alertas</button>
+  </section>
+  <p class="stock-nota">Solo componentes con disponible ≤ mínimo. Sugerido a reponer = (mínimo × 2) − disponible. Los saldos negativos requieren revisar la inconsistencia antes de reponer. Se actualiza cada 15 segundos mientras esta página está visible.</p>
+  <p class="stock-nota" id="stock-actualizacion">Todavía no se consultaron los datos.</p>
+  <noscript><div class="alert alert-warning">Activá JavaScript para consultar el stock.</div></noscript>
+  <div class="alert alert-danger" role="alert" id="stock-error" hidden></div>
+  <a href="login.php" class="btn btn-outline" id="stock-sesion" hidden>Volver a ingresar</a>
+  <section class="stock-resumen" aria-label="Totales de los productos filtrados">
+    <article><h2>Productos</h2><strong id="stock-total-productos">—</strong></article>
+    <article><h2>Unidades físicas</h2><strong id="stock-total-fisico">—</strong></article>
+    <article><h2>Comprometidas</h2><strong id="stock-total-comprometido">—</strong></article>
+    <article><h2>Disponibles</h2><strong id="stock-total-disponible">—</strong></article>
+  </section>
+  <p class="stock-nota">Los totales corresponden a todos los resultados de los filtros, no solo a esta página.</p>
+  <section class="stock-filtros" aria-label="Filtros de disponibilidad">
+    <div class="form-group"><label class="form-label" for="stock-busqueda">Buscar componente</label>
+      <input type="search" class="form-input" id="stock-busqueda" maxlength="120" placeholder="SKU, nombre, categoría o ubicación" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label" for="stock-categoria">Categoría</label>
+      <select class="form-input" id="stock-categoria"><option value="">Todas las categorías</option></select></div>
+    <div class="form-group"><label class="form-label" for="stock-nivel">Disponibilidad</label>
+      <select class="form-input" id="stock-nivel"><option value="">Todas las alertas</option><option value="CRITICO">Crítico</option><option value="QUIEBRE">Quiebre total</option><option value="INCONSISTENTE">Revisar inconsistencia</option></select></div>
+    <button type="button" class="btn btn-outline" id="stock-limpiar">Limpiar filtros</button>
+  </section>
+  <section class="stock-listado" aria-label="Disponibilidad por componente">
+    <p id="stock-estado" role="status" aria-live="polite">Cargando alertas…</p>
+    <div class="stock-tabla-wrap">
+      <table class="data-table" id="stock-tabla" aria-busy="true">
+        <caption class="stock-sr">Componentes en alerta y cantidad sugerida a reponer</caption>
+        <thead><tr><th>Componente / SKU</th><th>Categoría</th><th>Ubicación</th><th>Físico</th><th>Comprometido</th><th>Disponible</th><th>Mínimo</th><th>Sugerido a reponer</th><th>Estado</th></tr></thead>
+        <tbody id="stock-filas"></tbody>
+      </table>
     </div>
-
-    <span class="coming-soon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ><path d="m10.3 3.9-8.1 14A2 2 0 0 0 3.9 21h16.2a2 2 0 0 0 1.7-3.1l-8.1-14a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></span>
-
-    <h1 class="coming-soon-title">Alertas de Reabastecimiento Crítico</h1>
-
-    <p class="coming-soon-desc">
-      Panel especializado para detectar tempranamente componentes electrónicos cuyo Stock Disponible ha perforado el umbral de seguridad ($S_D \le U_{min}$) o se encuentran en quiebre total ($S_D = 0$).
-    </p>
-
-    <div class="coming-soon-specs">
-      <div class="coming-soon-specs-title">Previsto para la Fase 4</div>
-      <ul class="coming-soon-specs-list">
-        <li>Cálculo automatizado de cantidad sugerida a reponer: $(U_{min} \times 2) - S_D$.</li>
-        <li>Diferenciación visual entre stock crítico y quiebre total.</li>
-        <li>Filtro directo por categoría, ubicación física y nivel de urgencia.</li>
-        <li>Reporte de componentes con alta demanda comprometida.</li>
-      </ul>
-    </div>
-
-    <div>
-      <a href="index.php" class="btn btn-primary" id="btn-back-dashboard">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 5-7 7 7 7M5 12h14"/></svg> Volver al Dashboard
-      </a>
-    </div>
-  </div>
+    <nav class="stock-paginacion" aria-label="Páginas de alertas">
+      <button class="btn btn-outline" type="button" id="stock-anterior" disabled>Anterior</button>
+      <span id="stock-pagina">1 / 1</span>
+      <button class="btn btn-outline" type="button" id="stock-siguiente" disabled>Siguiente</button>
+    </nav>
+  </section>
 </main>
-
+<script src="assets/js/reabastecimiento.js?v=<?= (int)filemtime(__DIR__ . '/assets/js/reabastecimiento.js') ?>" defer></script>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

@@ -36,7 +36,7 @@ function stock_expirar(PDO $pdo): int {
     }
     return $cantidad;
 }
-function stock_listar(PDO $pdo, array $params): array {
+function stock_listar(PDO $pdo, array $params, bool $solo_alertas = false): array {
     // Validate before housekeeping: malformed queries must not modify any data.
     $q = stock_texto($params, 'q', 120);
     $categoria = stock_texto($params, 'categoria', 60);
@@ -61,6 +61,7 @@ function stock_listar(PDO $pdo, array $params): array {
                 WHERE estado IN ('ACTIVA', 'PENDIENTE_AUTORIZACION', 'CONFIRMADA') GROUP BY sku) r ON r.sku = p.sku) s";
         $estadoSql = "CASE WHEN s.stock_disponible < 0 THEN 'INCONSISTENTE' WHEN s.stock_disponible = 0 THEN 'QUIEBRE' WHEN s.stock_disponible <= s.umbral_minimo THEN 'CRITICO' ELSE 'NORMAL' END";
         $where = " WHERE (? = '' OR s.sku LIKE ? ESCAPE '!' OR s.nombre LIKE ? ESCAPE '!' OR s.categoria LIKE ? ESCAPE '!' OR s.ubicacion_deposito LIKE ? ESCAPE '!') AND (? = '' OR s.categoria = ?) AND (? = '' OR (" . $estadoSql . ") = ?)";
+        if ($solo_alertas) $where .= ' AND s.stock_disponible <= s.umbral_minimo';
         $busqueda = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $q) . '%';
         $valores = [$q, $busqueda, $busqueda, $busqueda, $busqueda, $categoria, $categoria, $estado, $estado];
         $st = $pdo->prepare('SELECT COUNT(*) AS productos, COALESCE(SUM(s.stock_fisico),0) AS fisico, COALESCE(SUM(s.stock_comprometido),0) AS comprometido, COALESCE(SUM(s.stock_disponible),0) AS disponible' . $base . $where);
@@ -71,14 +72,15 @@ function stock_listar(PDO $pdo, array $params): array {
         $total = $resumen['productos'];
         $paginas = max(1, (int)ceil($total / 8));
         $pagina = min((int)$pagina, $paginas);
-        $st = $pdo->prepare('SELECT s.*, (' . $estadoSql . ') AS estado_stock' . $base . $where . ' ORDER BY s.nombre, s.sku LIMIT ? OFFSET ?');
+        $orden = $solo_alertas ? ' ORDER BY CASE WHEN s.stock_disponible < 0 THEN 0 WHEN s.stock_disponible = 0 THEN 1 ELSE 2 END, s.stock_disponible, s.nombre, s.sku' : ' ORDER BY s.nombre, s.sku';
+        $st = $pdo->prepare('SELECT s.*, (s.umbral_minimo * 2 - s.stock_disponible) AS cantidad_sugerida, (' . $estadoSql . ') AS estado_stock' . $base . $where . $orden . ' LIMIT ? OFFSET ?');
         foreach ($valores as $i => $valor) $st->bindValue($i + 1, $valor, PDO::PARAM_STR);
         $st->bindValue(10, 8, PDO::PARAM_INT);
         $st->bindValue(11, ($pagina - 1) * 8, PDO::PARAM_INT);
         $st->execute();
         $productos = $st->fetchAll(PDO::FETCH_ASSOC);
         foreach ($productos as &$p) {
-            foreach (['stock_fisico', 'stock_comprometido', 'stock_disponible', 'umbral_minimo'] as $campo) $p[$campo] = (int)$p[$campo];
+            foreach (['stock_fisico', 'stock_comprometido', 'stock_disponible', 'umbral_minimo', 'cantidad_sugerida'] as $campo) $p[$campo] = (int)$p[$campo];
         }
         unset($p);
         $st = $pdo->prepare('SELECT DISTINCT categoria FROM productos ORDER BY categoria');
