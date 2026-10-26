@@ -30,3 +30,36 @@ function reservas_listar(PDO $pdo, array $params, int $actor, string $rol): arra
     } catch (Throwable $e) { if ($pdo->inTransaction()) $pdo->rollBack(); throw $e; }
     return ['ok' => true, 'reservas' => $filas, 'total' => $total, 'pagina' => $pagina, 'paginas' => $paginas, 'por_pagina' => 8, 'hora_servidor' => date('c')];
 }
+
+/** Crea una reserva propia; el bloqueo del inventario serializa las solicitudes del SKU. */
+function reservas_crear(PDO $pdo, array $params, int $actor, string $rol): array {
+    if ($actor < 1 || !in_array($rol, ['ADMIN', 'SUPERVISOR_COMERCIAL', 'VENDEDOR_INTERNO'], true)) throw new ReservasError('No autorizado.');
+    $sku = $params['sku'] ?? ''; $cantidad = $params['cantidad'] ?? ''; $horas = $params['horas'] ?? '24';
+    if (!is_string($sku) || trim($sku) === '' || mb_strlen($sku, 'UTF-8') > 30 || preg_match('/[\x00-\x1F\x7F]/', $sku)) throw new ReservasError('Ingresá un SKU válido.');
+    $sku = trim($sku);
+    if ((!is_string($cantidad) && !is_int($cantidad)) || !preg_match('/^[0-9]{1,10}$/D', (string)$cantidad) || (float)$cantidad > 2147483647 || (int)$cantidad < 1) throw new ReservasError('La cantidad debe ser un número entero mayor a cero.');
+    if ((!is_string($horas) && !is_int($horas)) || !preg_match('/^[0-9]{1,3}$/D', (string)$horas) || (int)$horas < 1 || (int)$horas > 720) throw new ReservasError('La vigencia debe ser de 1 a 720 horas.');
+    $cantidad=(int)$cantidad; $horas=(int)$horas;
+    if ($rol === 'VENDEDOR_INTERNO' && $horas !== 24) throw new ReservasError('Los vendedores deben usar la vigencia de 24 horas.');
+    stock_expirar($pdo);
+    $pdo->beginTransaction();
+    try {
+        $st=$pdo->prepare('SELECT stock_fisico, umbral_minimo FROM inventario WHERE sku = ? FOR UPDATE'); $st->execute([$sku]); $inv=$st->fetch(PDO::FETCH_ASSOC);
+        if (!$inv) throw new ReservasError('No se encontró el SKU en inventario.');
+        $st=$pdo->prepare("SELECT COALESCE(SUM(cantidad),0) FROM reservas WHERE sku = ? AND estado IN ('ACTIVA', 'PENDIENTE_AUTORIZACION', 'CONFIRMADA')"); $st->execute([$sku]);
+        $disponible=(int)$inv['stock_fisico']-(int)$st->fetchColumn();
+        if ($cantidad > $disponible) throw new ReservasError('La cantidad solicitada supera el stock disponible actual.');
+        $estado=($rol==='VENDEDOR_INTERNO' && $disponible-$cantidad <= (int)$inv['umbral_minimo']) ? 'PENDIENTE_AUTORIZACION' : 'ACTIVA';
+        $st=$pdo->prepare('SELECT NOW()'); $st->execute();$ahora=$st->fetchColumn();
+        $creada=DateTimeImmutable::createFromFormat('!Y-m-d H:i:s', $ahora, new DateTimeZone('America/Argentina/Buenos_Aires'));
+        if ($creada===false) throw new RuntimeException('Hora de base inválida.');
+        $vencimiento=$creada->modify('+' . $horas . ' hours')->format('Y-m-d H:i:s');
+        $id='RES-'.$creada->format('Ymd').'-'.strtoupper(bin2hex(random_bytes(6)));
+        $st=$pdo->prepare('INSERT INTO reservas (id_reserva, sku, cantidad, id_empleado, creada_en, fecha_vencimiento, estado) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $st->execute([$id,$sku,$cantidad,$actor,$ahora,$vencimiento,$estado]);
+        $st=$pdo->prepare('INSERT INTO log_acciones (id_empleado, accion, detalles, ip) VALUES (?, ?, ?, ?)');
+        $st->execute([$actor,'RESERVA_CREADA',"Reserva {$id}, SKU {$sku}, cantidad {$cantidad}, estado {$estado}.",$_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']);
+        $pdo->commit();
+        return ['ok'=>true,'id_reserva'=>$id,'estado'=>$estado,'fecha_vencimiento'=>$vencimiento,'mensaje'=>$estado==='PENDIENTE_AUTORIZACION'?'Reserva creada y pendiente de autorización.':'Reserva creada correctamente.'];
+    } catch (Throwable $e) { if ($pdo->inTransaction()) $pdo->rollBack(); throw $e; }
+}

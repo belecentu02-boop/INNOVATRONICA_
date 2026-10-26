@@ -142,3 +142,12 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Reutiliza stock_expirar: vence activas/pendientes con auditoría transaccional y actor NULL; confirmadas no vencen. La consulta puede realizar este mantenimiento.
 - Pruebas aisladas: 19 casos SQLite, 8 casos HTTP simulados y DOM; requieren validación en WAMP con MySQL real. SQLite elimina FOR UPDATE en el adaptador de prueba y no valida concurrencia ni bloqueos.
 - Este bloque no incluye creación, aprobación, rechazo, liberación ni confirmación de reservas. No inicia facturación ni ajustes físicos.
+
+## Fase 5 — Creación de reservas
+
+- Solo usuarios autenticados y activos con roles válidos; POST con CSRF obligatorio, identidad del propietario derivada de la sesión.
+- Cantidad entera positiva, vigencia vendedor fija 24 h; supervisor y admin 1 a 720 horas. SKU y existencia validados en servidor.
+- Vencimientos existentes se procesan primero; transacción bloquea fila de inventario para serializar altas del SKU y recalcula físico menos comprometido antes de insertar. Si falta disponibilidad, rechaza. No modifica stock físico.
+- Vendedor con disponible resultante <= mínimo: PENDIENTE_AUTORIZACION; otros casos ACTIVA. Reserva y log RESERVA_CREADA son atómicos; rollback ante error.
+- Pruebas: sintaxis PHP/JS; 18 casos creación con SQLite, 19 casos de consulta, 10 casos HTTP simulados, DOM. SQLite no acredita bloqueos ni concurrencia MySQL; pendiente de validación en WAMP con una base de prueba.
+- El formulario previene doble envío mientras espera. Si falla la conexión el resultado puede ser incierto: revisar el listado antes de reenviar; no existe aún una clave de idempotencia.

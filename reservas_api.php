@@ -12,11 +12,19 @@ if (debe_cambiar_password_actual()) {
 }
 $rol = $_SESSION['u']['rol'] ?? '';
 if (!in_array($rol, ['ADMIN','SUPERVISOR_COMERCIAL','VENDEDOR_INTERNO'], true)) { http_response_code(403); echo json_encode(['ok'=>false,'error'=>'Acceso denegado.']); exit; }
-if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') { header('Allow: GET'); http_response_code(405); echo json_encode(['ok'=>false,'error'=>'Método no permitido.']); exit; }
+$metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+if (!in_array($metodo, ['GET','POST'], true)) { header('Allow: GET, POST'); http_response_code(405); echo json_encode(['ok'=>false,'error'=>'Método no permitido.']); exit; }
+if ($metodo === 'POST') {
+    $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? ($_POST['csrf_token'] ?? '');
+    if (!is_string($token) || !verificar_csrf($token)) { http_response_code(403); echo json_encode(['ok'=>false,'error'=>'Token CSRF inválido o sesión expirada.']); exit; }
+}
+
 try {
     define('INNOVATRONICA_STOCK_API', true); require_once __DIR__ . '/includes/stock.php';
     define('INNOVATRONICA_RESERVAS_API', true); require_once __DIR__ . '/includes/reservas.php';
-    echo json_encode(reservas_listar(db(), $_GET, (int)$_SESSION['u']['id_empleado'], $rol), JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+    $resultado = $metodo === 'GET' ? reservas_listar(db(), $_GET, (int)$_SESSION['u']['id_empleado'], $rol) : reservas_crear(db(), $_POST, (int)$_SESSION['u']['id_empleado'], $rol);
+    if ($metodo === 'POST') http_response_code(201);
+    echo json_encode($resultado, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 } catch (ReservasError $e) {
     http_response_code(422); echo json_encode(['ok'=>false,'error'=>$e->getMessage()], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {

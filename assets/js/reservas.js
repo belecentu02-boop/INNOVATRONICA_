@@ -52,6 +52,27 @@
   filtro.addEventListener('change',filtrar);el('reservas-limpiar').addEventListener('click',()=>{busqueda.value='';filtro.value='';filtrar();});
   el('reservas-recargar').addEventListener('click',()=>{clearTimeout(debounce);cargar();});
   el('reservas-anterior').addEventListener('click',()=>{if(!cargando&&pagina>1){--pagina;cargar();}});el('reservas-siguiente').addEventListener('click',()=>{if(!cargando&&pagina<paginas){++pagina;cargar();}});
+  const dialogo=el('reserva-dialogo'),form=el('reserva-form'),guardar=el('reserva-guardar');let enviando=false;
+  el('reserva-abrir').addEventListener('click',()=>{el('reserva-form-error').hidden=true;el('reserva-exito').hidden=true;dialogo.showModal();el('reserva-sku').focus();});
+  el('reserva-cerrar').addEventListener('click',()=>{if(!enviando)dialogo.close();});
+  dialogo.addEventListener('cancel',event=>{if(enviando)event.preventDefault();});
+  form.addEventListener('submit',async event=>{
+    event.preventDefault();if(enviando)return;
+    const error=el('reserva-form-error');error.hidden=true;
+    if(!form.reportValidity())return;
+    const body=new URLSearchParams(new FormData(form));
+    enviando=true;guardar.disabled=true;guardar.textContent='Enviando…';el('reserva-cerrar').disabled=true;
+    try {
+      const response=await fetch('reservas_api.php',{method:'POST',body,cache:'no-store'});
+      const data=await response.json();
+      if(!response.ok||!data.ok)throw new Error(data.error||'No se pudo crear la reserva.');
+      dialogo.close();form.reset();el('reserva-exito').textContent=data.mensaje+' ID: '+data.id_reserva;el('reserva-exito').hidden=false;
+      pagina=1;busqueda.value='';filtro.value='';cargar();
+    } catch(e) {
+      error.textContent=(e instanceof TypeError || e instanceof SyntaxError)?'No se pudo confirmar el resultado. Antes de enviar otra vez, cerrá y revisá el listado para evitar duplicados.':e.message;
+      error.hidden=false;
+    } finally {enviando=false;guardar.disabled=false;guardar.textContent='Crear reserva';el('reserva-cerrar').disabled=false;}
+  });
   setInterval(actualizarRelojes,1000);setInterval(()=>{if(!document.hidden&&!cargando&&!detenido)cargar();},15000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!cargando)cargar();});cargar();
 })();

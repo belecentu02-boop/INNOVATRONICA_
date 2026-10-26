@@ -10,3 +10,15 @@
 .reserva-detalles dd { margin: .25rem 0 0; font-size: .9rem; }
 .reserva-tiempo { font-family: var(--font-code,monospace); font-weight: 700; font-variant-numeric: tabular-nums; }
 @media(max-width:768px) { .reservas-page .reservas-filtros { grid-template-columns: 1fr; } .reserva-detalles { grid-template-columns: repeat(2,minmax(0,1fr)); } #reservas-lista { padding: .5rem 0; } #reservas-mensaje { padding: .5rem 0 1rem; border: 0; } .reserva-head { flex-wrap: wrap; } }
+
+.reserva-acciones { display: flex; flex-wrap: wrap; gap: .6rem; }
+.reserva-dialogo { width: min(94vw, 540px); max-height: 90vh; overflow: auto; margin: auto; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; background: #fff; color: #1e293b; }
+.reserva-dialogo::backdrop { background: rgba(15,23,42,.65); }
+.reserva-dialogo[open] { display: block; }
+.reserva-dialogo p { color: #475569; font-size: .9rem; line-height: 1.5; margin: .75rem 0; }
+.reserva-dialogo-head, .reserva-dialogo-footer { display:flex; align-items:center; justify-content:space-between; gap:.75rem; flex-wrap:wrap; }
+.reserva-dialogo-head h2 { font-size: 1.2rem; margin: 0; }
+.reserva-dialogo .form-group { margin: 1rem 0; }
+.reserva-dialogo-footer { margin-top: 1rem; }
+.reserva-dialogo [hidden] { display:none !important; }
+#reserva-exito { margin-top:1rem; }
