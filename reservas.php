@@ -42,17 +42,16 @@ require_once __DIR__ . '/includes/header.php';
       <div class="reserva-dialogo-footer"><a class="btn btn-outline" href="stock.php">Consultar stock</a><button type="submit" class="btn btn-primary" id="reserva-guardar">Crear reserva</button></div>
     </form>
   </dialog>
-  <?php if (!$es_vendedor): ?>
   <dialog id="reserva-resolver-dialogo" class="reserva-dialogo" aria-labelledby="reserva-resolver-titulo">
     <form id="reserva-resolver-form" novalidate>
       <div class="reserva-dialogo-head"><h2 id="reserva-resolver-titulo">Resolver reserva</h2><button type="button" class="btn btn-outline" id="reserva-resolver-cerrar">Cerrar</button></div>
       <p id="reserva-resolver-detalle"></p>
       <div class="form-group" id="reserva-motivo-grupo" hidden><label class="form-label" for="reserva-motivo">Motivo del rechazo</label><textarea class="form-input" id="reserva-motivo" maxlength="255" rows="3"></textarea></div>
+      <div class="form-group" id="reserva-extension-grupo" hidden><label class="form-label" for="reserva-extension-horas">Horas adicionales</label><input class="form-input" type="number" id="reserva-extension-horas" min="1" max="720" step="1" value="24"></div>
       <p id="reserva-resolver-error" class="alert alert-danger" role="alert" hidden></p>
       <div class="reserva-dialogo-footer"><button type="button" class="btn btn-outline" id="reserva-resolver-cancelar">Cancelar</button><button type="submit" class="btn btn-primary" id="reserva-resolver-confirmar">Confirmar</button></div>
     </form>
   </dialog>
-  <?php endif; ?>
   <p id="reserva-exito" class="alert alert-success" role="status" hidden></p>
 </main>
 <script src="assets/js/reservas.js?v=<?= (int)filemtime(__DIR__ . '/assets/js/reservas.js') ?>" defer></script>

@@ -159,3 +159,10 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Aprobar reinicia la vigencia a 24 horas y conserva el compromiso. Rechazar exige motivo, lo guarda y devuelve disponibilidad. Los cambios y su auditoría se confirman juntos; no cambia el stock físico.
 - Si la suma comprometida excede el físico se impide aprobar. Doble resolución se rechaza.
 - Probado en SQLite aislado: 18 casos de resolución, 19 de listado y 18 de creación; 10 casos HTTP simulados y DOM. SQLite no prueba bloqueos MySQL. Concurrencia real y presentación en WAMP quedan pendientes.
+
+## Fase 5 — Confirmar, extender y liberar
+
+- POST con CSRF; vendedor solo confirma reservas propias; supervisor y admin pueden confirmar, extender o liberar. Identidad y roles verificados en backend.
+- Confirmar y extender solo ACTIVA vigente; liberar solo ACTIVA vigente o CONFIRMADA. Se verifica estado y vigencia al actualizar; estados finales no se reactivan.
+- Extensión de 1 a 720 horas por operación, sumadas al vencimiento existente. CONFIRMADA no vence. LIBERADA deja de comprometer unidades; no cambia físico.
+- Orden de bloqueo inventario-reserva y auditoría atómica con rollback. Pruebas: 16 casos SQLite, 18 creación, 19 listado, 18 aprobación, 8 HTTP simulados y DOM. SQLite no valida bloqueos reales de MySQL; pruebas WAMP y concurrencia pendientes.

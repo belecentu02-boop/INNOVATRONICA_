@@ -31,11 +31,13 @@
       } else agregarCampo(dl,'Vencimiento',r.estado==='CONFIRMADA'?'No vence':fecha(r.fecha_vencimiento));
       card.appendChild(dl);
       if(r.estado==='RECHAZADA' && r.motivo_rechazo)card.appendChild(nodo('p','Motivo del rechazo: '+r.motivo_rechazo,'reserva-motivo'));
-      if(puedeAutorizar && r.estado==='PENDIENTE_AUTORIZACION') {
+      const disponibles=[];
+      if(puedeAutorizar && r.estado==='PENDIENTE_AUTORIZACION') disponibles.push(['aprobar','Aprobar'],['rechazar','Rechazar']);
+      if(r.estado==='ACTIVA') {disponibles.push(['confirmar','Confirmar']);if(puedeAutorizar)disponibles.push(['extender','Extender'],['liberar','Liberar']);}
+      if(puedeAutorizar && r.estado==='CONFIRMADA')disponibles.push(['liberar','Liberar']);
+      if(disponibles.length) {
         const acciones=nodo('div',null,'reserva-resolver-acciones');
-        for(const [accion,label,clase] of [['aprobar','Aprobar','btn btn-primary'],['rechazar','Rechazar','btn btn-outline']]) {
-          const boton=nodo('button',label,clase);boton.type='button';boton.addEventListener('click',()=>abrirResolucion(accion,r));acciones.appendChild(boton);
-        }
+        for(const [accion,label] of disponibles){const boton=nodo('button',label,'btn btn-outline');boton.type='button';boton.addEventListener('click',()=>abrirResolucion(accion,r));acciones.appendChild(boton);}
         card.appendChild(acciones);
       }
       fragment.appendChild(card);
@@ -85,13 +87,14 @@
   });
   let resolverPendiente=null, resolviendo=false;
   function abrirResolucion(accion,r) {
-    if(!puedeAutorizar)return;
     resolverPendiente={accion,id:r.id_reserva};const dialogo=el('reserva-resolver-dialogo'),motivo=el('reserva-motivo');
-    el('reserva-resolver-titulo').textContent=accion==='aprobar'?'Aprobar reserva':'Rechazar reserva';
-    el('reserva-resolver-detalle').textContent=accion==='aprobar'?'La reserva '+r.id_reserva+' quedará activa con 24 horas de vigencia.':'Las unidades de la reserva '+r.id_reserva+' dejarán de estar comprometidas.';
-    el('reserva-motivo-grupo').hidden=accion!=='rechazar';motivo.value='';motivo.required=accion==='rechazar';el('reserva-resolver-error').hidden=true;dialogo.showModal();
+    const titulos={aprobar:'Aprobar reserva',rechazar:'Rechazar reserva',confirmar:'Confirmar reserva',extender:'Extender reserva',liberar:'Liberar reserva'};
+    const detalles={aprobar:'La reserva quedará activa con 24 horas de vigencia.',rechazar:'Las unidades dejarán de estar comprometidas.',confirmar:'La reserva pasará a confirmada y dejará de vencer.',extender:'Se agregan horas a la fecha de vencimiento actual.',liberar:'Las unidades dejarán de estar comprometidas.'};
+    el('reserva-resolver-titulo').textContent=titulos[accion];el('reserva-resolver-detalle').textContent=r.id_reserva+'. '+detalles[accion];
+    el('reserva-motivo-grupo').hidden=accion!=='rechazar';motivo.value='';motivo.required=accion==='rechazar';
+    el('reserva-extension-grupo').hidden=accion!=='extender';el('reserva-extension-horas').value='24';el('reserva-resolver-error').hidden=true;dialogo.showModal();
   }
-  if(puedeAutorizar) {
+  {
     const dlg=el('reserva-resolver-dialogo'),formResolver=el('reserva-resolver-form'),confirmar=el('reserva-resolver-confirmar');
     function cerrar(){if(!resolviendo)dlg.close();}
     el('reserva-resolver-cerrar').addEventListener('click',cerrar);el('reserva-resolver-cancelar').addEventListener('click',cerrar);
@@ -99,7 +102,9 @@
     formResolver.addEventListener('submit',async e=>{
       e.preventDefault();if(resolviendo||!resolverPendiente)return;const err=el('reserva-resolver-error'),motivo=el('reserva-motivo').value.trim();err.hidden=true;
       if(resolverPendiente.accion==='rechazar'&&!motivo){err.textContent='Ingresá un motivo de rechazo.';err.hidden=false;return;}
-      const body=new URLSearchParams({accion:resolverPendiente.accion,id_reserva:resolverPendiente.id,motivo,csrf_token:form.elements.csrf_token.value});
+      const horas=el('reserva-extension-horas').value;
+      if(resolverPendiente.accion==='extender' && (!/^[0-9]+$/.test(horas)||Number(horas)<1||Number(horas)>720)){err.textContent='Ingresá de 1 a 720 horas enteras.';err.hidden=false;return;}
+      const body=new URLSearchParams({accion:resolverPendiente.accion,id_reserva:resolverPendiente.id,motivo,horas,csrf_token:form.elements.csrf_token.value});
       resolviendo=true;confirmar.disabled=true;el('reserva-resolver-cerrar').disabled=true;el('reserva-resolver-cancelar').disabled=true;confirmar.textContent='Procesando…';
       try {const response=await fetch('reservas_api.php',{method:'POST',body,cache:'no-store'});const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||'No se pudo resolver la reserva.');
         dlg.close();el('reserva-exito').textContent=data.mensaje;el('reserva-exito').hidden=false;cargar();

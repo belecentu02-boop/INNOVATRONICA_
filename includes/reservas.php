@@ -2,6 +2,7 @@
 /** Lectura de reservas con control de visibilidad impuesto en el servidor. */
 if (!defined('INNOVATRONICA_RESERVAS_API')) { http_response_code(403); exit('Acceso directo prohibido.'); }
 class ReservasError extends RuntimeException {}
+class ReservasForbidden extends ReservasError {}
 function reservas_listar(PDO $pdo, array $params, int $actor, string $rol): array {
     if ($actor < 1 || !in_array($rol, ['ADMIN', 'SUPERVISOR_COMERCIAL', 'VENDEDOR_INTERNO'], true)) throw new ReservasError('No autorizado.');
     $q = $params['q'] ?? ''; $estado = $params['estado'] ?? ''; $pagina = $params['pagina'] ?? '1';
@@ -99,4 +100,38 @@ function reservas_resolver(PDO $pdo, array $params, int $actor, string $rol): ar
         $pdo->commit();
         return ['ok'=>true,'id_reserva'=>$id,'estado'=>$estado,'mensaje'=>$texto];
     } catch (Throwable $e) {if ($pdo->inTransaction()) $pdo->rollBack();throw $e;}
+}
+
+/** Confirma, extiende o libera una reserva bajo bloqueo y auditoría. */
+function reservas_accionar(PDO $pdo, array $params, int $actor, string $rol): array {
+    $id=$params['id_reserva']??''; $accion=$params['accion']??''; $horas=$params['horas']??'24';
+    if ($actor<1 || !in_array($rol,['ADMIN','SUPERVISOR_COMERCIAL','VENDEDOR_INTERNO'],true)) throw new ReservasError('No autorizado.');
+    if (!is_string($id) || $id==='' || mb_strlen($id,'UTF-8')>30 || preg_match('/[\x00-\x1F\x7F]/',$id)) throw new ReservasError('Identificador inválido.');
+    if (!is_string($accion) || !in_array($accion,['confirmar','extender','liberar'],true)) throw new ReservasError('Acción inválida.');
+    if ($accion!=='confirmar' && $rol==='VENDEDOR_INTERNO') throw new ReservasError('No autorizado.');
+    if ($accion==='extender' && ((!is_string($horas) && !is_int($horas)) || !preg_match('/^[0-9]{1,3}$/D',(string)$horas) || (int)$horas<1 || (int)$horas>720)) throw new ReservasError('La extensión debe ser de 1 a 720 horas.');
+    stock_expirar($pdo);
+    $st=$pdo->prepare('SELECT sku FROM reservas WHERE id_reserva=?');$st->execute([$id]);$sku=$st->fetchColumn();if($sku===false) throw new ReservasError('La reserva no existe.');
+    $pdo->beginTransaction();
+    try {
+        $st=$pdo->prepare('SELECT stock_fisico FROM inventario WHERE sku=? FOR UPDATE');$st->execute([$sku]);if($st->fetchColumn()===false)throw new ReservasError('Inventario no encontrado.');
+        $st=$pdo->prepare('SELECT sku, estado, id_empleado, fecha_vencimiento FROM reservas WHERE id_reserva=? FOR UPDATE');$st->execute([$id]);$r=$st->fetch(PDO::FETCH_ASSOC);
+        if(!$r || $r['sku']!==$sku)throw new ReservasError('La reserva ya no está disponible.');
+        if($accion==='confirmar' && $rol==='VENDEDOR_INTERNO' && (int)$r['id_empleado']!==$actor)throw new ReservasForbidden('No autorizado.');
+        if($accion==='liberar' && $r['estado']==='CONFIRMADA') {
+            $st=$pdo->prepare("UPDATE reservas SET estado='LIBERADA' WHERE id_reserva=? AND estado='CONFIRMADA'");$st->execute([$id]);$estado='LIBERADA';$evento='RESERVA_LIBERADA';$mensaje='Reserva liberada; las unidades ya no están comprometidas.';
+        } else {
+            if($r['estado']!=='ACTIVA')throw new ReservasError('La reserva ya no está activa. Actualizá el listado.');
+            if($accion==='confirmar') {$st=$pdo->prepare("UPDATE reservas SET estado='CONFIRMADA' WHERE id_reserva=? AND estado='ACTIVA' AND fecha_vencimiento > NOW()");$st->execute([$id]);$estado='CONFIRMADA';$evento='RESERVA_CONFIRMADA';$mensaje='Reserva confirmada y disponible para facturación.';}
+            elseif($accion==='liberar') {$st=$pdo->prepare("UPDATE reservas SET estado='LIBERADA' WHERE id_reserva=? AND estado='ACTIVA' AND fecha_vencimiento > NOW()");$st->execute([$id]);$estado='LIBERADA';$evento='RESERVA_LIBERADA';$mensaje='Reserva liberada; las unidades ya no están comprometidas.';}
+            else {
+                $vencimiento=DateTimeImmutable::createFromFormat('!Y-m-d H:i:s',$r['fecha_vencimiento'],new DateTimeZone('America/Argentina/Buenos_Aires'));if(!$vencimiento)throw new RuntimeException('Vencimiento inválido.');
+                $nuevo=$vencimiento->modify('+'.(int)$horas.' hours')->format('Y-m-d H:i:s');
+                $st=$pdo->prepare("UPDATE reservas SET fecha_vencimiento=? WHERE id_reserva=? AND estado='ACTIVA' AND fecha_vencimiento > NOW()");$st->execute([$nuevo,$id]);$estado='ACTIVA';$evento='RESERVA_EXTENDIDA';$mensaje='Vigencia extendida por '.(int)$horas.' horas.';
+            }
+        }
+        if($st->rowCount()!==1)throw new ReservasError('La reserva venció o cambió de estado. Actualizá el listado.');
+        $st=$pdo->prepare('INSERT INTO log_acciones (id_empleado, accion, detalles, ip) VALUES (?, ?, ?, ?)');$st->execute([$actor,$evento,'Reserva '.$id.($accion==='extender'?'; horas adicionales: '.(int)$horas:'').'.',$_SERVER['REMOTE_ADDR']??'127.0.0.1']);
+        $pdo->commit();return ['ok'=>true,'id_reserva'=>$id,'estado'=>$estado,'mensaje'=>$mensaje];
+    } catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
 }
