@@ -1,0 +1,49 @@
+/* Catálogo: usa las fuentes locales y la identidad industrial compartida. */
+.catalogo-page { max-width: 1360px; }
+.catalogo-page [hidden] { display: none !important; }
+.catalogo-aviso { color: #475569; font-size: .875rem; margin: -0.5rem 0 1.25rem; line-height: 1.6; }
+.catalogo-filtros { display: grid; grid-template-columns: minmax(220px, 2fr) minmax(180px, 1fr) auto auto; align-items: end; gap: .75rem; padding: 1rem; border: 1px solid #cbd5e1; border-radius: 12px; background: #f4f6f8; margin-bottom: 1rem; }
+.catalogo-page .form-input { min-height: 44px; font-size: 1rem; }
+.catalogo-page .btn { min-height: 44px; }
+.catalogo-page .btn-primary { background: #b45309; box-shadow: none; }
+.catalogo-page .btn-primary:hover { background: #92400e; transform: none; }
+.catalogo-page .btn:focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+.catalogo-page button:disabled { opacity: .55; cursor: default; }
+.catalogo-listado { border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; overflow: hidden; }
+#catalogo-estado { padding: 1rem; font-size: .875rem; color: #475569; border-bottom: 1px solid #e2e8f0; }
+.catalogo-tabla-wrap { overflow-x: auto; }
+.catalogo-listado .data-table th { background: #edf1f5; }
+.catalogo-listado .data-table td { vertical-align: top; }
+.catalogo-componente { display: flex; flex-direction: column; gap: .35rem; min-width: 160px; overflow-wrap: anywhere; }
+.catalogo-componente code { color: #475569; font-size: .8rem; }
+.catalogo-componente small { color: #475569; line-height: 1.5; white-space: pre-wrap; }
+.catalogo-numero { text-align: right; font-family: var(--font-code, monospace); font-variant-numeric: tabular-nums; }
+.catalogo-paginacion { display: flex; justify-content: flex-end; align-items: center; gap: .75rem; padding: .85rem 1rem; background: #f4f6f8; border-top: 1px solid #e2e8f0; }
+.catalogo-dialogo { width: min(660px, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); margin: auto; padding: 1.5rem; border: 1px solid #cbd5e1; border-top: 4px solid #b45309; border-radius: 12px; background: #f8fafc; color: #0f172a; overflow-y: auto; box-shadow: var(--shadow-xl); }
+.catalogo-dialogo::backdrop { background: rgba(15,23,42,.72); }
+.catalogo-dialogo-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.catalogo-dialogo-header h2 { font-size: 1.25rem; }
+.catalogo-campos { border: 0; padding: 0; margin: 1rem 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.catalogo-campos .form-group { min-width: 0; }
+.catalogo-campos small { color: #475569; font-size: .8rem; line-height: 1.5; }
+.catalogo-ancho { grid-column: 1 / -1; }
+.catalogo-dialogo-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .75rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
+.catalogo-sr { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media(max-width: 1000px) { .catalogo-filtros { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+@media(max-width: 768px) {
+  .catalogo-filtros, .catalogo-campos { grid-template-columns: minmax(0, 1fr); }
+  .catalogo-listado { background: transparent; border: 0; overflow: visible; }
+  #catalogo-estado { padding: .5rem 0 1rem; border: 0; }
+  .catalogo-tabla-wrap { overflow: visible; }
+  #catalogo-tabla, #catalogo-filas { display: block; width: 100%; }
+  #catalogo-tabla thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #catalogo-filas tr { display: block; padding: 1rem; margin-bottom: 1rem; border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; }
+  #catalogo-filas td { display: block; padding: .5rem 0; border: 0; text-align: left; overflow-wrap: anywhere; }
+  #catalogo-filas td[data-label]::before { content: attr(data-label); display: block; font-family: var(--font-interface, sans-serif); font-size: .75rem; font-weight: 600; color: #475569; margin-bottom: .25rem; }
+  .catalogo-componente { min-width: 0; }
+  #catalogo-filas td:first-child { border-bottom: 1px solid #e2e8f0; margin-bottom: .5rem; }
+  #catalogo-filas td:last-child .btn { width: 100%; }
+  .catalogo-paginacion { justify-content: space-between; border: 1px solid #cbd5e1; border-radius: 8px; }
+  .catalogo-dialogo { padding: 1.25rem; }
+  .catalogo-dialogo-acciones .btn { flex: 1 1 auto; }
+}

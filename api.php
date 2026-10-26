@@ -79,6 +79,33 @@ $current_admin_id = (int)($_SESSION['u']['id_empleado'] ?? 0);
 try {
     switch ($accion) {
 
+        // Fase 4.1: el catálogo reutiliza autenticación, rol ADMIN y CSRF previos.
+        case 'listar_productos':
+        case 'crear_producto':
+        case 'editar_producto':
+            header('Cache-Control: no-store');
+            define('INNOVATRONICA_CATALOGO_API', true);
+            require_once __DIR__ . '/includes/catalogo.php';
+            $metodo_esperado = $accion === 'listar_productos' ? 'GET' : 'POST';
+            if ($method !== $metodo_esperado) {
+                header('Allow: ' . $metodo_esperado);
+                http_response_code(405);
+                echo json_encode(['ok' => false, 'error' => 'Método no permitido.'], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            try {
+                $resultado = $accion === 'listar_productos'
+                    ? catalogo_listar($pdo, $params)
+                    : catalogo_guardar($pdo, $params, $current_admin_id, $accion === 'crear_producto');
+                http_response_code($accion === 'crear_producto' ? 201 : 200);
+                echo json_encode($resultado, JSON_UNESCAPED_UNICODE);
+            } catch (CatalogoError $e) {
+                http_response_code($e->estado);
+                echo json_encode(['ok' => false, 'error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            }
+            exit;
+
+
         // ============================================================
         // 1. LISTAR USUARIOS
         // ============================================================

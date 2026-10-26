@@ -88,3 +88,25 @@ Esta revisión estática identificó problemas que contradicen la conclusión an
 
 El estado correcto es **mitigaciones parciales aplicadas; validación y otros hallazgos pendientes**, no una auditoría de seguridad cerrada.
 
+
+
+## Fase 4 — primer bloque de catálogo (2026-10-25)
+
+| Archivo | Problema / control | Gravedad | Estado |
+| :--- | :--- | :--- | :--- |
+| api.php | Alta, edición y listado exclusivos de ADMIN, tras sesión activa y cambio obligatorio | alta | Conservados; verificados con entorno de prueba simulado |
+| api.php | POST sin CSRF o método incorrecto | alta | Rechazados; verificados 403/405 en entorno aislado |
+| includes/catalogo.php | SKU duplicado, entradas no escalares y límites de campos | alta | Validados; conflicto MySQL 1062 traducido a 409 |
+| includes/catalogo.php | Alta parcial de producto/inventario o auditoría fallida | alta | Transacción y rollback; probados con SQLite aislado |
+| includes/catalogo.php | Alteración de stock físico desde catálogo | alta | Rechazada; alta con cero y edición solo de umbral |
+| assets/js/catalogo.js | Interpretación de nombres/fichas como HTML | alta | Se usa textContent y creación de nodos; prueba DOM superada |
+| catalogo.php | Acceso directo de supervisor/vendedor | alta | requerir_rol(['ADMIN']) conservado; verificar página real en WAMP |
+| includes/catalogo.php | Concurrencia y SQL específico de MySQL | alta | Pendiente de prueba en WAMP; SQLite no verifica FOR UPDATE |
+| assets/css/catalogo.css | Presentación, modal y adaptación móvil | baja | Pendiente de comprobación visual en WAMP |
+
+Validación ejecutada: lint PHP mediante PHP-WASM; 33 comprobaciones de servicio con
+SQLite en memoria, 12 casos de API con autenticación simulada y pruebas DOM de alta,
+edición, escape de HTML, doble envío y errores de red/API.
+Estas pruebas no reemplazan la integración con MySQL ni sesiones reales.
+No se modificaron login, auth.php, base de datos, reservas ni reglas de stock.
+El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
