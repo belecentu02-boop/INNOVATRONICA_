@@ -151,3 +151,11 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Vendedor con disponible resultante <= mínimo: PENDIENTE_AUTORIZACION; otros casos ACTIVA. Reserva y log RESERVA_CREADA son atómicos; rollback ante error.
 - Pruebas: sintaxis PHP/JS; 18 casos creación con SQLite, 19 casos de consulta, 10 casos HTTP simulados, DOM. SQLite no acredita bloqueos ni concurrencia MySQL; pendiente de validación en WAMP con una base de prueba.
 - El formulario previene doble envío mientras espera. Si falla la conexión el resultado puede ser incierto: revisar el listado antes de reenviar; no existe aún una clave de idempotencia.
+
+## Fase 5 — Aprobación y rechazo de solicitudes
+
+- Las acciones de resolución requieren ADMIN o SUPERVISOR_COMERCIAL en el servidor y POST con CSRF. VENDEDOR recibe 403.
+- Solo se permiten reservas pendientes vigentes. Se ejecuta mantenimiento de vencimientos, se bloquean inventario y reserva en ese orden y se verifica el estado de nuevo; el UPDATE impide resolver reservas vencidas en el instante de la operación.
+- Aprobar reinicia la vigencia a 24 horas y conserva el compromiso. Rechazar exige motivo, lo guarda y devuelve disponibilidad. Los cambios y su auditoría se confirman juntos; no cambia el stock físico.
+- Si la suma comprometida excede el físico se impide aprobar. Doble resolución se rechaza.
+- Probado en SQLite aislado: 18 casos de resolución, 19 de listado y 18 de creación; 10 casos HTTP simulados y DOM. SQLite no prueba bloqueos MySQL. Concurrencia real y presentación en WAMP quedan pendientes.

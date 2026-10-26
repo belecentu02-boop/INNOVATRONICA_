@@ -7,7 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <link rel="stylesheet" href="assets/css/stock.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/stock.css') ?>">
 <link rel="stylesheet" href="assets/css/reservas.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/reservas.css') ?>">
-<main class="container stock-page reservas-page">
+<main class="container stock-page reservas-page" data-puede-autorizar="<?= $es_vendedor ? '0' : '1' ?>">
   <section class="dashboard-hero" aria-labelledby="reservas-titulo">
     <div><h1 class="dashboard-hero-title" id="reservas-titulo"><?= $es_vendedor ? 'Mis reservas' : 'Todas las reservas' ?></h1>
     <p class="dashboard-hero-sub">Consultá el estado y la vigencia de las reservas comerciales.</p></div>
@@ -42,6 +42,17 @@ require_once __DIR__ . '/includes/header.php';
       <div class="reserva-dialogo-footer"><a class="btn btn-outline" href="stock.php">Consultar stock</a><button type="submit" class="btn btn-primary" id="reserva-guardar">Crear reserva</button></div>
     </form>
   </dialog>
+  <?php if (!$es_vendedor): ?>
+  <dialog id="reserva-resolver-dialogo" class="reserva-dialogo" aria-labelledby="reserva-resolver-titulo">
+    <form id="reserva-resolver-form" novalidate>
+      <div class="reserva-dialogo-head"><h2 id="reserva-resolver-titulo">Resolver reserva</h2><button type="button" class="btn btn-outline" id="reserva-resolver-cerrar">Cerrar</button></div>
+      <p id="reserva-resolver-detalle"></p>
+      <div class="form-group" id="reserva-motivo-grupo" hidden><label class="form-label" for="reserva-motivo">Motivo del rechazo</label><textarea class="form-input" id="reserva-motivo" maxlength="255" rows="3"></textarea></div>
+      <p id="reserva-resolver-error" class="alert alert-danger" role="alert" hidden></p>
+      <div class="reserva-dialogo-footer"><button type="button" class="btn btn-outline" id="reserva-resolver-cancelar">Cancelar</button><button type="submit" class="btn btn-primary" id="reserva-resolver-confirmar">Confirmar</button></div>
+    </form>
+  </dialog>
+  <?php endif; ?>
   <p id="reserva-exito" class="alert alert-success" role="status" hidden></p>
 </main>
 <script src="assets/js/reservas.js?v=<?= (int)filemtime(__DIR__ . '/assets/js/reservas.js') ?>" defer></script>

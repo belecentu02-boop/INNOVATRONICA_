@@ -4,8 +4,8 @@ define('INNOVATRONICA_STOCK_API', true); require __DIR__ . '/../includes/stock.p
 define('INNOVATRONICA_RESERVAS_API', true); require __DIR__ . '/../includes/reservas.php';
 class TestPDO extends PDO {public function prepare(string $sql, array $options=[]): PDOStatement|false {return parent::prepare(str_replace(' FOR UPDATE','',$sql),$options);}}
 $db=new TestPDO('sqlite::memory:');$db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);@$db->sqliteCreateFunction('NOW',fn()=>'2026-10-26 12:00:00');
-$db->exec("CREATE TABLE productos(sku TEXT PRIMARY KEY,nombre TEXT);CREATE TABLE usuarios(id_empleado INTEGER PRIMARY KEY,nombre TEXT);CREATE TABLE reservas(id_reserva TEXT PRIMARY KEY,sku TEXT,cantidad INTEGER,id_empleado INTEGER,creada_en TEXT,fecha_vencimiento TEXT,estado TEXT);CREATE TABLE log_acciones(id_empleado INTEGER,accion TEXT,detalles TEXT,ip TEXT); INSERT INTO productos VALUES('P1','Sensor 100%'),('P2','Placa'); INSERT INTO usuarios VALUES(1,'Vendedor A'),(2,'Vendedor B'),(3,'Supervisor');");
-$st=$db->prepare('INSERT INTO reservas VALUES(?,?,?,?,?,?,?)');
+$db->exec("CREATE TABLE productos(sku TEXT PRIMARY KEY,nombre TEXT);CREATE TABLE usuarios(id_empleado INTEGER PRIMARY KEY,nombre TEXT);CREATE TABLE reservas(id_reserva TEXT PRIMARY KEY,sku TEXT,cantidad INTEGER,id_empleado INTEGER,creada_en TEXT,fecha_vencimiento TEXT,estado TEXT,motivo_rechazo TEXT);CREATE TABLE log_acciones(id_empleado INTEGER,accion TEXT,detalles TEXT,ip TEXT); INSERT INTO productos VALUES('P1','Sensor 100%'),('P2','Placa'); INSERT INTO usuarios VALUES(1,'Vendedor A'),(2,'Vendedor B'),(3,'Supervisor');");
+$st=$db->prepare('INSERT INTO reservas(id_reserva,sku,cantidad,id_empleado,creada_en,fecha_vencimiento,estado) VALUES(?,?,?,?,?,?,?)');
 $st->execute(['RA','P1',2,1,'2026-10-20 10:00:00','2026-10-27 12:00:00','ACTIVA']);
 $st->execute(['RB','P2',1,2,'2026-10-20 11:00:00','2026-10-27 12:00:00','ACTIVA']);
 $st->execute(['RC','P1',1,1,'2026-10-20 12:00:00','2026-10-25 12:00:00','PENDIENTE_AUTORIZACION']);

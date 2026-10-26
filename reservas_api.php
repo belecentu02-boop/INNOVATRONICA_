@@ -22,12 +22,16 @@ if ($metodo === 'POST') {
 try {
     define('INNOVATRONICA_STOCK_API', true); require_once __DIR__ . '/includes/stock.php';
     define('INNOVATRONICA_RESERVAS_API', true); require_once __DIR__ . '/includes/reservas.php';
-    $resultado = $metodo === 'GET' ? reservas_listar(db(), $_GET, (int)$_SESSION['u']['id_empleado'], $rol) : reservas_crear(db(), $_POST, (int)$_SESSION['u']['id_empleado'], $rol);
-    if ($metodo === 'POST') http_response_code(201);
+    $accion = $metodo === 'POST' ? ($_POST['accion'] ?? 'crear') : 'listar';
+    if (!is_string($accion) || !in_array($accion, ['listar','crear','aprobar','rechazar'], true) || ($metodo === 'POST' && $accion === 'listar')) { http_response_code(400); echo json_encode(['ok'=>false,'error'=>'Acción inválida.']); exit; }
+    if (in_array($accion, ['aprobar','rechazar'], true) && !in_array($rol, ['ADMIN','SUPERVISOR_COMERCIAL'], true)) { http_response_code(403); echo json_encode(['ok'=>false,'error'=>'Acceso denegado.']); exit; }
+    if ($accion === 'listar') $resultado=reservas_listar(db(), $_GET, (int)$_SESSION['u']['id_empleado'], $rol);
+    elseif ($accion === 'crear') { $resultado=reservas_crear(db(), $_POST, (int)$_SESSION['u']['id_empleado'], $rol); http_response_code(201); }
+    else $resultado=reservas_resolver(db(), $_POST, (int)$_SESSION['u']['id_empleado'], $rol);
     echo json_encode($resultado, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
 } catch (ReservasError $e) {
     http_response_code(422); echo json_encode(['ok'=>false,'error'=>$e->getMessage()], JSON_UNESCAPED_UNICODE);
 } catch (Throwable $e) {
     error_log('Error al consultar reservas: ' . $e->getMessage());
-    http_response_code(500); echo json_encode(['ok'=>false,'error'=>'No se pudieron consultar las reservas.']);
+    http_response_code(500); echo json_encode(['ok'=>false,'error'=>'No se pudo completar la operación.']);
 }

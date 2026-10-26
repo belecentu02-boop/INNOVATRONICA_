@@ -22,3 +22,6 @@
 .reserva-dialogo-footer { margin-top: 1rem; }
 .reserva-dialogo [hidden] { display:none !important; }
 #reserva-exito { margin-top:1rem; }
+
+.reserva-resolver-acciones { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1rem; }
+.reserva-motivo { margin-top:.8rem; color:#475569; font-size:.9rem; white-space:pre-wrap; }
