@@ -133,3 +133,12 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Consultas preparadas; datos mostrados con textContent; SVG de ubicación fijo; sin HTML de productos.
 - Verificado: sintaxis PHP y JavaScript, 38 comprobaciones aisladas SQLite, 12 casos API con autenticación simulada y prueba DOM de columna sugerida, XSS, filtros y paginación.
 - No se acreditan bloqueos/concurrencia MySQL con SQLite. Integración y presentación en WAMP pendientes de confirmación del usuario.
+
+## Fase 5 — Primer bloque: listado de reservas
+
+- Pantalla y endpoint verifican sesión, estado activo y cambio obligatorio de contraseña; solo los tres roles previstos acceden.
+- El vendedor se restringe en SQL al id de la sesión; los parámetros enviados por el cliente no cambian el propietario. Supervisor y administrador consultan todas.
+- Endpoint GET, sin caché, con validación de búsqueda/estado/página y consultas PDO preparadas; salida mediante textContent.
+- Reutiliza stock_expirar: vence activas/pendientes con auditoría transaccional y actor NULL; confirmadas no vencen. La consulta puede realizar este mantenimiento.
+- Pruebas aisladas: 19 casos SQLite, 8 casos HTTP simulados y DOM; requieren validación en WAMP con MySQL real. SQLite elimina FOR UPDATE en el adaptador de prueba y no valida concurrencia ni bloqueos.
+- Este bloque no incluye creación, aprobación, rechazo, liberación ni confirmación de reservas. No inicia facturación ni ajustes físicos.

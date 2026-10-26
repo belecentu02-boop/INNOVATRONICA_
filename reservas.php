@@ -1,54 +1,33 @@
 <?php
-/**
- * Innovatrónica S.A. - Sistema de Control de Stock
- * Módulo: Gestión de Reservas y Temporizador (Próximamente - Fase 5)
- */
-
 require_once __DIR__ . '/includes/auth.php';
-requerir_login();
-
-$u = usuario_actual();
-$es_solo_vendedor = es_vendedor();
-$page_title = $es_solo_vendedor ? 'Mis Reservas · Innovatrónica S.A.' : 'Todas las Reservas · Innovatrónica S.A.';
-
+requerir_rol(['ADMIN','SUPERVISOR_COMERCIAL','VENDEDOR_INTERNO']);
+$es_vendedor = es_vendedor();
+$page_title = ($es_vendedor ? 'Mis reservas' : 'Todas las reservas') . ' · Innovatrónica S.A.';
 require_once __DIR__ . '/includes/header.php';
 ?>
-
-<main class="container module-page">
-  <div class="coming-soon-card">
-    <div class="coming-soon-badge-fase">
-      <span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 3h6M10 3v5l-4 5v2h12v-2l-4-5V3M12 15v6"/></svg></span>
-      <span>En desarrollo · Fase 5: Reservas, Temporizador y Aprobaciones</span>
-    </div>
-
-    <span class="coming-soon-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ><circle cx="12" cy="14" r="8"/><path d="M12 10v4l2 2M9 2h6M12 2v4M18 8l2-2"/></svg></span>
-
-    <h1 class="coming-soon-title">
-      <?= $es_solo_vendedor ? 'Mis Reservas Comerciales' : 'Gestión Integral de Reservas' ?>
-    </h1>
-
-    <p class="coming-soon-desc">
-      <?= $es_solo_vendedor 
-          ? 'En este módulo podrás consultar tus reservas activas, temporizadores regresivos en tiempo real y solicitar autorizaciones para reservas en stock crítico.' 
-          : 'Panel centralizado para supervisar todas las reservas comerciales del equipo, autorizar o rechazar solicitudes críticas, extender vigencias o liberar unidades al stock general.' ?>
-    </p>
-
-    <div class="coming-soon-specs">
-      <div class="coming-soon-specs-title">Previsto para la Fase 5</div>
-      <ul class="coming-soon-specs-list">
-        <li>Temporizador decreciente en vivo <code>HH:MM:SS</code> sincronizado con la hora del servidor.</li>
-        <li>Ciclo de vida completo: <code>ACTIVA</code>, <code>PENDIENTE_AUTORIZACION</code>, <code>CONFIRMADA</code>, <code>FACTURADA</code>, <code>EXPIRADA</code>, <code>RECHAZADA</code>, <code>LIBERADA</code>.</li>
-        <li>Modales integrados en la interfaz (sin <code>confirm()</code> ni <code>prompt()</code> nativos).</li>
-        <li>Control de concurrencia mediante transacciones y bloqueos <code>SELECT ... FOR UPDATE</code>.</li>
-      </ul>
-    </div>
-
-    <div>
-      <a href="index.php" class="btn btn-primary" id="btn-back-dashboard">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 5-7 7 7 7M5 12h14"/></svg> Volver al Dashboard
-      </a>
-    </div>
-  </div>
+<link rel="stylesheet" href="assets/css/stock.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/stock.css') ?>">
+<link rel="stylesheet" href="assets/css/reservas.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/reservas.css') ?>">
+<main class="container stock-page reservas-page">
+  <section class="dashboard-hero" aria-labelledby="reservas-titulo">
+    <div><h1 class="dashboard-hero-title" id="reservas-titulo"><?= $es_vendedor ? 'Mis reservas' : 'Todas las reservas' ?></h1>
+    <p class="dashboard-hero-sub">Consultá el estado y la vigencia de las reservas comerciales.</p></div>
+    <button type="button" class="btn btn-outline" id="reservas-recargar">Actualizar</button>
+  </section>
+  <p class="stock-nota">Consulta automática cada 15 segundos mientras la página está visible. La creación y las autorizaciones se incorporarán en los siguientes bloques.</p>
+  <p class="stock-nota" id="reservas-actualizacion">Todavía no se consultaron los datos.</p>
+  <noscript><div class="alert alert-warning">Activá JavaScript para consultar las reservas.</div></noscript>
+  <div class="alert alert-danger" id="reservas-error" role="alert" hidden></div>
+  <a class="btn btn-outline" id="reservas-sesion" href="login.php" hidden>Volver a ingresar</a>
+  <section class="stock-filtros reservas-filtros" aria-label="Filtros de reservas">
+    <div class="form-group"><label class="form-label" for="reservas-busqueda">Buscar</label><input class="form-input" type="search" id="reservas-busqueda" maxlength="120" placeholder="ID de reserva, SKU o componente" autocomplete="off"></div>
+    <div class="form-group"><label class="form-label" for="reservas-estado">Estado</label><select class="form-input" id="reservas-estado"><option value="">Todos los estados</option><option value="ACTIVA">Activa</option><option value="PENDIENTE_AUTORIZACION">Pendiente de autorización</option><option value="CONFIRMADA">Confirmada</option><option value="FACTURADA">Facturada</option><option value="EXPIRADA">Expirada</option><option value="RECHAZADA">Rechazada</option><option value="LIBERADA">Liberada</option></select></div>
+    <button type="button" class="btn btn-outline" id="reservas-limpiar">Limpiar filtros</button>
+  </section>
+  <section aria-label="Listado de reservas" class="stock-listado reservas-listado">
+    <p id="reservas-mensaje" role="status" aria-live="polite">Cargando reservas…</p>
+    <div id="reservas-lista" aria-busy="true"></div>
+    <nav class="stock-paginacion" aria-label="Páginas de reservas"><button class="btn btn-outline" type="button" id="reservas-anterior" disabled>Anterior</button><span id="reservas-pagina">1 / 1</span><button class="btn btn-outline" type="button" id="reservas-siguiente" disabled>Siguiente</button></nav>
+  </section>
 </main>
-
+<script src="assets/js/reservas.js?v=<?= (int)filemtime(__DIR__ . '/assets/js/reservas.js') ?>" defer></script>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
