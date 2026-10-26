@@ -1,0 +1,48 @@
+.stock-page { max-width: 1440px; }
+.stock-page [hidden] { display: none !important; }
+.stock-page .stock-nota { color: #475569; font-size: .85rem; line-height: 1.6; margin-bottom: 1rem; }
+.stock-page .btn { min-height: 44px; }
+.stock-page .btn:focus-visible { outline: 3px solid #b45309; outline-offset: 2px; }
+.stock-page button:disabled { opacity: .55; cursor: default; }
+.stock-resumen { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1rem; margin: 1rem 0; }
+.stock-resumen article { padding: 1rem; border: 1px solid #cbd5e1; border-top: 3px solid #b45309; border-radius: 10px; background: #f8fafc; }
+.stock-resumen h2 { color: #475569; font-family: var(--font-interface,sans-serif); font-size: .875rem; font-weight: 600; margin-bottom: .5rem; }
+.stock-resumen strong { font-family: var(--font-code,monospace); font-size: clamp(1.25rem,3vw,1.8rem); overflow-wrap: anywhere; }
+.stock-filtros { display: grid; grid-template-columns: minmax(200px,2fr) minmax(160px,1fr) minmax(160px,1fr) auto; gap: .75rem; align-items: end; padding: 1rem; background: #f4f6f8; border: 1px solid #cbd5e1; border-radius: 12px; margin-bottom: 1rem; }
+.stock-page .form-input { min-height: 44px; font-size: 1rem; }
+.stock-listado { background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; overflow: hidden; }
+#stock-estado { padding: 1rem; font-size: .875rem; color: #475569; border-bottom: 1px solid #e2e8f0; }
+.stock-tabla-wrap { overflow-x: auto; }
+.stock-page .data-table th { background: #edf1f5; }
+.stock-page .data-table th, .stock-page .data-table td { padding: .85rem; }
+.stock-page .data-table td { vertical-align: top; }
+.stock-componente { display: flex; flex-direction: column; gap: .35rem; min-width: 150px; overflow-wrap: anywhere; }
+.stock-componente code { font-size: .8rem; color: #475569; }
+.stock-componente small { color: #475569; line-height: 1.5; white-space: pre-wrap; }
+.stock-numero { font-family: var(--font-code,monospace); text-align: right; font-variant-numeric: tabular-nums; }
+.stock-disponible { font-weight: 700; }
+.stock-ubicacion { display: inline-flex; align-items: center; gap: .35rem; background: #edf1f5; padding: .3rem .45rem; border-radius: 6px; color: #334155; }
+.stock-ubicacion svg { flex-shrink: 0; }
+.stock-ubicacion code { white-space: nowrap; font-size: .8rem; }
+.stock-badge { display: inline-block; font-size: .75rem; font-weight: 600; padding: .3rem .55rem; border: 1px solid; border-radius: 6px; line-height: 1.5; }
+.stock-normal { color: #065f46; background: #d1fae5; border-color: #6ee7b7; }
+.stock-critico { color: #92400e; background: #fef3c7; border-color: #fcd34d; }
+.stock-quiebre, .stock-inconsistente { color: #991b1b; background: #fee2e2; border-color: #fca5a5; }
+.stock-paginacion { display: flex; align-items: center; justify-content: flex-end; gap: .75rem; padding: .85rem 1rem; background: #f4f6f8; border-top: 1px solid #e2e8f0; }
+.stock-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media(max-width: 1050px) { .stock-filtros { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width: 768px) {
+  .stock-resumen { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .stock-filtros { grid-template-columns: minmax(0,1fr); }
+  .stock-listado { background: transparent; border: 0; overflow: visible; }
+  #stock-estado { padding: .5rem 0 1rem; border: 0; }
+  .stock-tabla-wrap { overflow: visible; }
+  #stock-tabla, #stock-filas { display: block; width: 100%; }
+  #stock-tabla thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #stock-filas tr { display: block; padding: 1rem; margin-bottom: 1rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px; }
+  #stock-filas td { display: block; border: 0; text-align: left; padding: .5rem 0; overflow-wrap: anywhere; }
+  #stock-filas td[data-label]::before { content: attr(data-label); display: block; color: #475569; font-family: var(--font-interface,sans-serif); font-size: .75rem; font-weight: 600; margin-bottom: .25rem; }
+  #stock-filas td:first-child { border-bottom: 1px solid #e2e8f0; margin-bottom: .5rem; }
+  .stock-componente { min-width: 0; }
+  .stock-paginacion { justify-content: space-between; border: 1px solid #cbd5e1; border-radius: 8px; }
+}

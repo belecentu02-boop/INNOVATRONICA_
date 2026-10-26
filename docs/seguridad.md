@@ -110,3 +110,15 @@ edición, escape de HTML, doble envío y errores de red/API.
 Estas pruebas no reemplazan la integración con MySQL ni sesiones reales.
 No se modificaron login, auth.php, base de datos, reservas ni reglas de stock.
 El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
+
+
+## Fase 4 — Stock y ubicaciones
+
+- Sesión activa y cambio obligatorio de contraseña verificados en API y acceso por roles a la pantalla.
+- Solo la acción listar_stock admite los tres roles; las acciones existentes de Catálogo y usuarios siguen restringidas a ADMIN.
+- Endpoint GET de consulta sin caché; se conserva control CSRF de peticiones POST.
+- Filtros tipados, límites de longitud, estados permitidos y parámetros PDO preparados; comodines de búsqueda escapados.
+- Renderizado con textContent y SVG fijo, sin incorporar HTML procedente de productos.
+- Vencimientos y auditoría atómicos, actor de sistema NULL e idempotencia; rollback ante error. No se altera inventario físico.
+- Los saldos negativos se señalan como inconsistencias.
+- Pruebas aisladas SQLite: 28 comprobaciones. La simulación no acredita bloqueos MySQL ni sustituye prueba de integración WAMP. Ver plan en fase4_stock.md.

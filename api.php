@@ -36,16 +36,6 @@ if (debe_cambiar_password_actual()) {
     exit;
 }
 
-// 3. Verificación estricta de rol ADMIN (backend)
-if (!es_admin()) {
-    http_response_code(403);
-    echo json_encode([
-        'ok'    => false,
-        'error' => 'Acceso denegado (403): Se requieren permisos de Administrador General para operar esta API.'
-    ], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 // 3. Captura unificada de parámetros (soporta GET, POST form-urlencoded y JSON payload)
@@ -72,12 +62,45 @@ if ($method === 'POST') {
     }
 }
 
-$accion = trim($params['accion'] ?? ($params['action'] ?? ''));
+$accion_recibida = $params['accion'] ?? ($params['action'] ?? '');
+if (!is_string($accion_recibida)) {
+    http_response_code(400);
+    echo json_encode(['ok' => false, 'error' => 'Acción inválida.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
+$accion = trim($accion_recibida);
+
+// Solo listar_stock se habilita a los tres roles. Usuarios y catálogo siguen siendo ADMIN.
+$consulta_stock = $accion === 'listar_stock' && (es_admin() || es_supervisor() || es_vendedor());
+if (!es_admin() && !$consulta_stock) {
+    http_response_code(403);
+    echo json_encode(['ok' => false, 'error' => 'Acceso denegado (403): Se requieren permisos de Administrador General para operar esta API.'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 $pdo = db();
 $current_admin_id = (int)($_SESSION['u']['id_empleado'] ?? 0);
 
 try {
     switch ($accion) {
+
+        case 'listar_stock':
+            header('Cache-Control: no-store');
+            if ($method !== 'GET') {
+                header('Allow: GET');
+                http_response_code(405);
+                echo json_encode(['ok' => false, 'error' => 'Método no permitido. Use GET.'], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+            define('INNOVATRONICA_STOCK_API', true);
+            require_once __DIR__ . '/includes/stock.php';
+            try {
+                echo json_encode(stock_listar($pdo, $params), JSON_UNESCAPED_UNICODE);
+            } catch (StockError $e) {
+                http_response_code(422);
+                echo json_encode(['ok' => false, 'error' => $e->getMessage()], JSON_UNESCAPED_UNICODE);
+            }
+            exit;
+
 
         // Fase 4.1: el catálogo reutiliza autenticación, rol ADMIN y CSRF previos.
         case 'listar_productos':
