@@ -1,0 +1,14 @@
+.ajuste-panel {max-width: 760px; padding: 1.25rem; border:1px solid #cbd5e1; border-radius:12px; background:#f8fafc;}
+.ajuste-buscar {display:flex; gap:.6rem; margin-top:.35rem;}
+.ajuste-buscar input {min-width:0; flex:1;}
+.ajuste-resumen {margin:1.25rem 0; padding:1rem; background:#edf1f5; border-left:3px solid #b45309; border-radius:8px;}
+.ajuste-resumen h2 {font-size:1.1rem; margin:0 0 .5rem;}
+.ajuste-resumen p {margin:.35rem 0;}
+.ajuste-panel .form-group {margin:1rem 0;}
+.ajuste-panel small {color:#475569;}
+.ajuste-dialogo {width:min(94vw,500px); margin:auto; padding:1.25rem; border:1px solid #cbd5e1; border-radius:12px; background:white; color:#1e293b;}
+.ajuste-dialogo::backdrop {background:rgba(15,23,42,.65);}
+.ajuste-dialogo h2 {font-size:1.2rem;}
+.ajuste-dialogo p {margin:1rem 0; white-space:pre-wrap; overflow-wrap:anywhere;}
+.ajuste-acciones {display:flex; justify-content:space-between; gap:.5rem;}
+@media(max-width:600px){.ajuste-buscar{flex-direction:column;}}

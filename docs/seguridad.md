@@ -173,3 +173,11 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Bajo bloqueo de inventario y reserva, solo CONFIRMADA pasa a FACTURADA una vez. Se rechaza stock inconsistente, físico insuficiente o cantidad inválida.
 - En una transacción se actualiza inventario, estado, movimientos_stock y log_acciones; cualquier fallo hace rollback. El disponible se mantiene consistente: la cantidad deja de estar comprometida a la vez que baja el físico.
 - Pruebas aisladas SQLite: 14 comprobaciones de facturación y rollback; regresión de fase 5. No acredita bloqueos reales de MySQL ni concurrencia. Pruebas WAMP pendientes en base descartable.
+
+## Fase 6 — Ingresos y correcciones de inventario
+
+- Página y endpoint exclusivos de ADMIN, con sesión activa, cambio obligatorio y CSRF en POST.
+- Validación de SKU, números enteros, motivo, tipo y stock previamente consultado. Entrada obtenida en transacción y comparación para impedir sobrescritura de un stock que cambió.
+- Bloqueo FOR UPDATE del inventario, recálculo de comprometido, rechazo si nuevo físico resulta menor. Mantenimiento de vencimientos auditado previo. Ingreso solo permite aumento; corrección permite aumento o reducción, y no admite cambios nulos.
+- Cambio físico, movimientos_stock y log_acciones en una transacción con rollback. Cantidad de movimiento es la diferencia absoluta; antes y después determinan dirección.
+- 14 comprobaciones SQLite, 9 casos HTTP simulados y DOM; SQLite no prueba bloqueos MySQL. WAMP, concurrencia y consistencia con facturación quedan pendientes de validación real.

@@ -12,12 +12,12 @@ require_once __DIR__ . '/includes/header.php';
       <h1 class="dashboard-hero-title" id="catalogo-titulo">Catálogo de componentes</h1>
       <p class="dashboard-hero-sub">Productos, fichas técnicas, stock mínimo y ubicaciones del depósito.</p>
     </div>
-    <button type="button" class="btn btn-primary" id="catalogo-nuevo">
+    <div class="catalogo-acciones-cabecera"><a class="btn btn-outline" href="ajustar_inventario.php">Ajustar stock</a> <button type="button" class="btn btn-primary" id="catalogo-nuevo">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
       Nuevo producto
-    </button>
+    </button></div>
   </section>
-  <p class="catalogo-aviso">Los productos nuevos comienzan con stock físico en cero. Los ingresos y ajustes de existencias se habilitarán en el módulo de inventario.</p>
+  <p class="catalogo-aviso">Los productos nuevos comienzan con stock físico en cero. El administrador puede registrar ingresos y ajustes de existencias.</p>
   <noscript><div class="alert alert-warning">Activá JavaScript para consultar y administrar el catálogo.</div></noscript>
   <div id="catalogo-mensaje" class="alert" role="alert" hidden></div>
   <section class="catalogo-filtros" aria-label="Filtros del catálogo">
