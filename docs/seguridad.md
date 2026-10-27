@@ -166,3 +166,10 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Confirmar y extender solo ACTIVA vigente; liberar solo ACTIVA vigente o CONFIRMADA. Se verifica estado y vigencia al actualizar; estados finales no se reactivan.
 - Extensión de 1 a 720 horas por operación, sumadas al vencimiento existente. CONFIRMADA no vence. LIBERADA deja de comprometer unidades; no cambia físico.
 - Orden de bloqueo inventario-reserva y auditoría atómica con rollback. Pruebas: 16 casos SQLite, 18 creación, 19 listado, 18 aprobación, 8 HTTP simulados y DOM. SQLite no valida bloqueos reales de MySQL; pruebas WAMP y concurrencia pendientes.
+
+## Fase 6 — Facturación y despacho
+
+- POST con sesión activa y CSRF. ADMIN y SUPERVISOR_COMERCIAL pueden facturar; VENDEDOR recibe 403.
+- Bajo bloqueo de inventario y reserva, solo CONFIRMADA pasa a FACTURADA una vez. Se rechaza stock inconsistente, físico insuficiente o cantidad inválida.
+- En una transacción se actualiza inventario, estado, movimientos_stock y log_acciones; cualquier fallo hace rollback. El disponible se mantiene consistente: la cantidad deja de estar comprometida a la vez que baja el físico.
+- Pruebas aisladas SQLite: 14 comprobaciones de facturación y rollback; regresión de fase 5. No acredita bloqueos reales de MySQL ni concurrencia. Pruebas WAMP pendientes en base descartable.

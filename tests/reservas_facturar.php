@@ -1,0 +1,14 @@
+<?php
+/** SQLite aislada, no prueba bloqueo de MySQL. */
+define('INNOVATRONICA_RESERVAS_API',true);require __DIR__.'/../includes/reservas.php';
+class FacturarPDO extends PDO {public string $fallar=''; public function prepare(string $s,array $o=[]):PDOStatement|false {if($this->fallar && str_contains($s,$this->fallar))throw new PDOException('Fallo simulado');return parent::prepare(str_replace(' FOR UPDATE','',$s),$o);}}
+$db=new FacturarPDO('sqlite::memory:');$db->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+$db->exec("CREATE TABLE inventario(sku TEXT PRIMARY KEY,stock_fisico INT); CREATE TABLE reservas(id_reserva TEXT,sku TEXT,cantidad INT,estado TEXT); CREATE TABLE movimientos_stock(sku TEXT,tipo TEXT,cantidad INT,stock_anterior INT,stock_nuevo INT,id_empleado INT,motivo TEXT);CREATE TABLE log_acciones(id_empleado INT,accion TEXT,detalles TEXT,ip TEXT); INSERT INTO inventario VALUES('A',10),('B',2),('C',5); INSERT INTO reservas VALUES('R1','A',3,'CONFIRMADA'),('R2','A',2,'ACTIVA'),('R3','B',3,'CONFIRMADA'),('R4','C',1,'CONFIRMADA');");
+$n=0;function check($v,$m){global $n;if(!$v)throw new Exception($m);$n++;}
+try{reservas_facturar($db,['id_reserva'=>'R1'],1,'VENDEDOR_INTERNO');throw new Exception('Permiso inválido');}catch(ReservasForbidden $e){check(true,'Vendedor denegado');}
+$r=reservas_facturar($db,['id_reserva'=>'R1'],2,'SUPERVISOR_COMERCIAL');check($r['estado']==='FACTURADA','Estado');check((int)$db->query("SELECT stock_fisico FROM inventario WHERE sku='A'")->fetchColumn()===7,'Físico 10-3');
+check((int)$db->query("SELECT SUM(cantidad) FROM reservas WHERE sku='A' AND estado IN ('ACTIVA','CONFIRMADA','PENDIENTE_AUTORIZACION')")->fetchColumn()===2,'No duplica compromiso');
+$m=$db->query('SELECT * FROM movimientos_stock')->fetch(PDO::FETCH_ASSOC);check($m['tipo']==='FACTURACION' && (int)$m['cantidad']===3 && (int)$m['stock_anterior']===10 && (int)$m['stock_nuevo']===7 && (int)$m['id_empleado']===2,'Movimiento');check((int)$db->query("SELECT COUNT(*) FROM log_acciones WHERE accion='RESERVA_FACTURADA'")->fetchColumn()===1,'Auditoría');
+foreach(['R1','R2','R3','NO'] as $id){try{reservas_facturar($db,['id_reserva'=>$id],2,'ADMIN');throw new Exception('Se aceptó inválida');}catch(ReservasError $e){check(true,'No facturar doble, estado inválido o inconsistente');}}
+$db->fallar='INSERT INTO log_acciones';try{reservas_facturar($db,['id_reserva'=>'R4'],2,'ADMIN');throw new Exception('Fallo no provocado');}catch(PDOException $e){}
+check((int)$db->query("SELECT stock_fisico FROM inventario WHERE sku='C'")->fetchColumn()===5,'Rollback físico');check($db->query("SELECT estado FROM reservas WHERE id_reserva='R4'")->fetchColumn()==='CONFIRMADA','Rollback estado');check((int)$db->query('SELECT COUNT(*) FROM movimientos_stock')->fetchColumn()===1,'Rollback movimiento');check(!$db->inTransaction(),'Transacción cerrada');echo "OK: $n verificaciones de facturación.\n";

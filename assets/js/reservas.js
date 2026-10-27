@@ -34,7 +34,7 @@
       const disponibles=[];
       if(puedeAutorizar && r.estado==='PENDIENTE_AUTORIZACION') disponibles.push(['aprobar','Aprobar'],['rechazar','Rechazar']);
       if(r.estado==='ACTIVA') {disponibles.push(['confirmar','Confirmar']);if(puedeAutorizar)disponibles.push(['extender','Extender'],['liberar','Liberar']);}
-      if(puedeAutorizar && r.estado==='CONFIRMADA')disponibles.push(['liberar','Liberar']);
+      if(puedeAutorizar && r.estado==='CONFIRMADA')disponibles.push(['facturar','Facturar / despachar'],['liberar','Liberar']);
       if(disponibles.length) {
         const acciones=nodo('div',null,'reserva-resolver-acciones');
         for(const [accion,label] of disponibles){const boton=nodo('button',label,'btn btn-outline');boton.type='button';boton.addEventListener('click',()=>abrirResolucion(accion,r));acciones.appendChild(boton);}
@@ -88,8 +88,8 @@
   let resolverPendiente=null, resolviendo=false;
   function abrirResolucion(accion,r) {
     resolverPendiente={accion,id:r.id_reserva};const dialogo=el('reserva-resolver-dialogo'),motivo=el('reserva-motivo');
-    const titulos={aprobar:'Aprobar reserva',rechazar:'Rechazar reserva',confirmar:'Confirmar reserva',extender:'Extender reserva',liberar:'Liberar reserva'};
-    const detalles={aprobar:'La reserva quedará activa con 24 horas de vigencia.',rechazar:'Las unidades dejarán de estar comprometidas.',confirmar:'La reserva pasará a confirmada y dejará de vencer.',extender:'Se agregan horas a la fecha de vencimiento actual.',liberar:'Las unidades dejarán de estar comprometidas.'};
+    const titulos={aprobar:'Aprobar reserva',rechazar:'Rechazar reserva',confirmar:'Confirmar reserva',extender:'Extender reserva',liberar:'Liberar reserva',facturar:'Facturar y despachar'};
+    const detalles={aprobar:'La reserva quedará activa con 24 horas de vigencia.',rechazar:'Las unidades dejarán de estar comprometidas.',confirmar:'La reserva pasará a confirmada y dejará de vencer.',extender:'Se agregan horas a la fecha de vencimiento actual.',liberar:'Las unidades dejarán de estar comprometidas.',facturar:'Se descontará el stock físico y se registrará el despacho.'};
     el('reserva-resolver-titulo').textContent=titulos[accion];el('reserva-resolver-detalle').textContent=r.id_reserva+'. '+detalles[accion];
     el('reserva-motivo-grupo').hidden=accion!=='rechazar';motivo.value='';motivo.required=accion==='rechazar';
     el('reserva-extension-grupo').hidden=accion!=='extender';el('reserva-extension-horas').value='24';el('reserva-resolver-error').hidden=true;dialogo.showModal();

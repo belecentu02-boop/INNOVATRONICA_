@@ -135,3 +135,32 @@ function reservas_accionar(PDO $pdo, array $params, int $actor, string $rol): ar
         $pdo->commit();return ['ok'=>true,'id_reserva'=>$id,'estado'=>$estado,'mensaje'=>$mensaje];
     } catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();throw $e;}
 }
+
+/** Despacha una reserva confirmada y registra el movimiento en una transacción. */
+function reservas_facturar(PDO $pdo, array $params, int $actor, string $rol): array {
+    if ($actor<1 || !in_array($rol,['ADMIN','SUPERVISOR_COMERCIAL'],true)) throw new ReservasForbidden('No autorizado.');
+    $id=$params['id_reserva']??'';
+    if (!is_string($id) || $id==='' || mb_strlen($id,'UTF-8')>30 || preg_match('/[\x00-\x1F\x7F]/',$id)) throw new ReservasError('Identificador inválido.');
+    $st=$pdo->prepare('SELECT sku FROM reservas WHERE id_reserva=?');$st->execute([$id]);$sku=$st->fetchColumn();
+    if ($sku===false) throw new ReservasError('La reserva no existe.');
+    $pdo->beginTransaction();
+    try {
+        $st=$pdo->prepare('SELECT stock_fisico FROM inventario WHERE sku=? FOR UPDATE');$st->execute([$sku]);$fisico=$st->fetchColumn();
+        if ($fisico===false) throw new ReservasError('Inventario no encontrado.');$fisico=(int)$fisico;
+        $st=$pdo->prepare('SELECT sku, cantidad, estado FROM reservas WHERE id_reserva=? FOR UPDATE');$st->execute([$id]);$reserva=$st->fetch(PDO::FETCH_ASSOC);
+        if (!$reserva || $reserva['sku']!==$sku || $reserva['estado']!=='CONFIRMADA') throw new ReservasError('La reserva ya no está confirmada. Actualizá el listado.');
+        $cantidad=(int)$reserva['cantidad'];if ($cantidad<1) throw new ReservasError('Cantidad de reserva inválida.');
+        $st=$pdo->prepare("SELECT COALESCE(SUM(cantidad),0) FROM reservas WHERE sku=? AND estado IN ('ACTIVA','PENDIENTE_AUTORIZACION','CONFIRMADA')");$st->execute([$sku]);$comprometido=(int)$st->fetchColumn();
+        if ($comprometido>$fisico || $cantidad>$fisico) throw new ReservasError('El stock presenta una inconsistencia. Revisalo antes de facturar.');
+        $nuevo=$fisico-$cantidad;
+        $st=$pdo->prepare('UPDATE inventario SET stock_fisico=? WHERE sku=?');$st->execute([$nuevo,$sku]);
+        if ($st->rowCount()!==1) throw new RuntimeException('No se pudo actualizar el inventario.');
+        $st=$pdo->prepare("UPDATE reservas SET estado='FACTURADA' WHERE id_reserva=? AND estado='CONFIRMADA'");$st->execute([$id]);
+        if ($st->rowCount()!==1) throw new ReservasError('La reserva cambió de estado. Actualizá el listado.');
+        $st=$pdo->prepare('INSERT INTO movimientos_stock (sku,tipo,cantidad,stock_anterior,stock_nuevo,id_empleado,motivo) VALUES (?, ?, ?, ?, ?, ?, ?)');
+        $st->execute([$sku,'FACTURACION',$cantidad,$fisico,$nuevo,$actor,'Despacho de reserva '.$id]);
+        $st=$pdo->prepare('INSERT INTO log_acciones (id_empleado,accion,detalles,ip) VALUES (?, ?, ?, ?)');
+        $st->execute([$actor,'RESERVA_FACTURADA','Reserva '.$id.', SKU '.$sku.', cantidad '.$cantidad.'.',$_SERVER['REMOTE_ADDR']??'127.0.0.1']);
+        $pdo->commit();return ['ok'=>true,'id_reserva'=>$id,'estado'=>'FACTURADA','mensaje'=>'Reserva facturada y stock actualizado.'];
+    } catch (Throwable $e) {if ($pdo->inTransaction())$pdo->rollBack();throw $e;}
+}
