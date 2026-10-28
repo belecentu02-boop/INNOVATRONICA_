@@ -181,3 +181,19 @@ El bloque de catálogo no completa las pantallas de Stock ni Reabastecimiento.
 - Bloqueo FOR UPDATE del inventario, recálculo de comprometido, rechazo si nuevo físico resulta menor. Mantenimiento de vencimientos auditado previo. Ingreso solo permite aumento; corrección permite aumento o reducción, y no admite cambios nulos.
 - Cambio físico, movimientos_stock y log_acciones en una transacción con rollback. Cantidad de movimiento es la diferencia absoluta; antes y después determinan dirección.
 - 14 comprobaciones SQLite, 9 casos HTTP simulados y DOM; SQLite no prueba bloqueos MySQL. WAMP, concurrencia y consistencia con facturación quedan pendientes de validación real.
+
+
+
+## Prueba de portal de empleados
+
+| Archivo | Problema o control revisado | Gravedad | Estado |
+|---|---|---|---|
+| `portal.php` | Acceso anónimo, cuenta desactivada y cambio obligatorio de contraseña | Alta | Protegido con `requerir_login()`; pruebas HTTP ejecutadas |
+| `portal.php` | Exposición de nombre sin escape y accesos según rol vigente | Alta | Salida con `h()`; pruebas de escape, tres roles y reducción de rol ejecutadas |
+| `login.php` | Preservar CSRF, regeneración de sesión, rechazo de credenciales y prioridad del cambio obligatorio al redirigir al portal | Alta | Controles existentes conservados; pruebas HTTP ejecutadas |
+| `cambiar_password.php` | Conservar el controlador de cambio de contraseña al cambiar el destino de éxito | Alta | Solo cambia el destino al portal; cambio obligatorio probado por HTTP |
+| `includes/header.php`, `includes/footer.php` | Marca y navegación compartidas sin alterar la autorización de los endpoints | Media | Enlaces estáticos; menú de cuenta conserva logout POST y CSRF |
+| `portal.php`, `login.php` | Evitar almacenamiento HTTP en caché del nuevo recorrido de acceso | Media | `Cache-Control: no-store, private` |
+| `tests/portal_http.php` | Riesgo de ejecutar pruebas contra datos de WAMP | Alta | Fixture SQLite en directorio temporal; no carga la configuración real; solo CLI |
+
+Las consultas del controlador de login y cambio de contraseña siguen usando PDO y parámetros preparados. La revisión de salidas PHP distingue valores dinámicos escapados con `h()` de SVG y etiquetas estáticas controladas por el código. No se agregan endpoints de modificación de datos ni permisos nuevos. Los accesos visuales del portal complementan los controles de rol existentes en cada página/API; no los sustituyen. Ver alcance, resultados y pasos para volver a `main` en `docs/portal_empleados.md`.

@@ -23,10 +23,16 @@ $rol_label = rol_label();
  */
 $nav_items = [];
 
+// Regreso al portal y acceso al panel del módulo de stock.
+$nav_items[] = [
+    'id' => 'nav-portal', 'title' => 'Portal', 'url' => 'portal.php',
+    'icon' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z"/><path d="M9 21v-8h6v8"/></svg>'
+];
+
 // Acceso al Dashboard principal
 $nav_items[] = [
     'id'    => 'nav-dashboard',
-    'title' => 'Dashboard',
+    'title' => 'Panel de stock',
     'url'   => 'index.php',
     'icon'  => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
 ];
@@ -101,6 +107,7 @@ if (es_vendedor()) {
 
 $es_password_obligatorio = debe_cambiar_password_actual();
 $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
+$es_portal_empleados = $es_portal_empleados ?? false;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -109,17 +116,20 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= h($page_title) ?></title>
   <link rel="stylesheet" href="assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
+  <link rel="stylesheet" href="assets/css/portal.css?v=<?= filemtime(__DIR__ . '/../assets/css/portal.css') ?>">
+  <link rel="icon" type="image/png" href="assets/img/marca/icono-innovatronica.png">
 </head>
-<body>
+<body<?= $es_portal_empleados ? ' class="employee-portal-shell"' : '' ?>>
+  <?php if ($es_portal_empleados): ?><a class="portal-skip-link" href="#main-content">Saltar al contenido</a><?php endif; ?>
 
   <!-- Cabecera Superior -->
   <header class="app-header">
     <div class="app-header-top">
-      <a href="index.php" class="app-brand" id="brand-link">
-        <div class="app-brand-badge">IN</div>
+      <a href="portal.php" class="app-brand" id="brand-link" aria-label="Portal de empleados · Innovatrónica S.A.">
+        <div class="app-brand-badge company-mark"><img src="assets/img/marca/icono-innovatronica.png" width="52" height="52" alt=""></div>
         <div>
           <div class="app-brand-name">Innovatrónica S.A.</div>
-          <div class="app-brand-sub">Control de Stock · Ventas Internas</div>
+          <div class="app-brand-sub"><?= $es_portal_empleados ? 'Portal de empleados' : 'Control de Stock · Ventas Internas' ?></div>
         </div>
       </a>
 
@@ -175,6 +185,10 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
 
               <div class="user-dropdown-divider"></div>
 
+              <a href="portal.php" class="user-dropdown-item" role="menuitem">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10H3V10Z"/><path d="M9 20v-7h6v7"/></svg>
+                <span>Portal de empleados</span>
+              </a>
               <a href="cambiar_password.php" class="user-dropdown-item <?= ($current_page === 'cambiar_password.php') ? 'active' : '' ?>" role="menuitem" id="link-cambiar-password">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="7.5" cy="15.5" r="4.5"/>
@@ -199,7 +213,7 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
           </div>
         <?php endif; ?>
 
-        <?php if (!$es_password_obligatorio): ?>
+        <?php if (!$es_password_obligatorio && !$es_portal_empleados): ?>
           <!-- Botón Menú Móvil -->
           <button type="button" class="nav-toggle" id="navToggle" aria-controls="navMenu" aria-expanded="false" aria-label="Abrir menú de navegación">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" style="display:block;"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -208,7 +222,7 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
       </div>
     </div>
 
-    <?php if (!$es_password_obligatorio): ?>
+    <?php if (!$es_password_obligatorio && !$es_portal_empleados): ?>
       <!-- Barra de Navegación por Rol -->
       <nav class="app-nav-bar" aria-label="Navegación principal">
         <ul class="app-nav-menu" id="navMenu">
@@ -226,7 +240,7 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
           <?php endforeach; ?>
         </ul>
       </nav>
-    <?php else: ?>
+    <?php elseif ($es_password_obligatorio): ?>
       <!-- Banner de bloqueo por cambio de contraseña obligatorio -->
       <div class="mandatory-pwd-banner">
         <div class="mandatory-pwd-banner-inner">
@@ -267,3 +281,4 @@ $page_title = $page_title ?? 'Control de Stock · Innovatrónica S.A.';
       }
     })();
   </script>
+
