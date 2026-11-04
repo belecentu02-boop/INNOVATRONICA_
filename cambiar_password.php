@@ -113,7 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             obtener_estado_usuario_db(true);
 
                             // Volver al portal con notificación de confirmación
-                            header('Location: portal.php?msg=password_actualizada');
+                            $destino = es_superadmin()
+                              ? 'superadmin.php'
+                              : 'portal.php';
+
+                          header('Location: ' . $destino . '?msg=password_actualizada');
                             exit;
                         }
                     }

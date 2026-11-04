@@ -27,6 +27,7 @@ $stmtUsers = $pdo->query("
         debe_cambiar_password,
         DATE_FORMAT(creado_en, '%d/%m/%Y %H:%i') AS creado_en
     FROM usuarios 
+    WHERE rol <> 'SUPERADMIN'
     ORDER BY id_empleado ASC
 ");
 $usuarios = $stmtUsers->fetchAll(PDO::FETCH_ASSOC);

@@ -2,6 +2,13 @@
 /** Portal de empleados: punto de entrada protegido a los módulos de la empresa. */
 require_once __DIR__ . '/includes/auth.php';
 requerir_login();
+
+// El SUPERADMIN utiliza exclusivamente su centro de control.
+if (es_superadmin()) {
+    header('Location: superadmin.php');
+    exit;
+}
+
 header('Cache-Control: no-store, private');
 
 $page_title = 'Portal de empleados · Innovatrónica S.A.';

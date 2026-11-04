@@ -12,7 +12,10 @@ if (esta_autenticado()) {
     if (debe_cambiar_password_actual()) {
         header('Location: cambiar_password.php');
     } else {
-        header('Location: portal.php');
+        header(
+    'Location: ' .
+    (es_superadmin() ? 'superadmin.php' : 'portal.php')
+);
     }
     exit;
 }
@@ -87,7 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if ((int)($u['debe_cambiar_password'] ?? 0) === 1) {
                                 header('Location: cambiar_password.php');
                             } else {
-                                header('Location: portal.php');
+                                header(
+                                  'Location: ' .
+                                  (es_superadmin() ? 'superadmin.php' : 'portal.php')
+                               );
                             }
                             exit;
                         } else {
