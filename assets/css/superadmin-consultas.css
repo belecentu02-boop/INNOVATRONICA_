@@ -1,0 +1,263 @@
+
+/* ==========================================================
+   INNOVATRÓNICA S.A.
+   SUPERADMIN - CONSULTAS Y SUPERVISIÓN
+   Identidad visual industrial tecnológica
+   ========================================================== */
+
+/* NAVEGACIÓN Y REGRESO */
+
+.sa-consultas .sa-back {
+    display: inline-block;
+    margin: 0 0 1.25rem;
+    color: #92400e;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.sa-consultas .sa-back:hover {
+    text-decoration: underline;
+}
+
+/* BUSCADOR DE REGISTROS */
+
+.sa-consultas .sa-search {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.sa-consultas .sa-search label {
+    font-size: 0.85rem;
+    color: var(--portal-muted, #536277);
+}
+
+.sa-consultas .sa-search input {
+    border: 1px solid var(--portal-line, #dbe3eb);
+    border-radius: 7px;
+    padding: 0.7rem;
+    background: #ffffff;
+    color: var(--portal-ink, #17212f);
+    flex: 1;
+    min-width: 180px;
+    font: inherit;
+}
+
+.sa-consultas .sa-search a {
+    color: #92400e;
+}
+
+/* PAGINACIÓN */
+
+.sa-consultas .sa-pages {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1rem 0;
+}
+
+.sa-consultas .sa-pages a {
+    text-decoration: none;
+}
+
+/* TABLAS DE CONSULTA */
+
+.sa-consultas .sa-personal-table td {
+    overflow-wrap: anywhere;
+}
+
+.sa-consultas .sa-personal-scroll {
+    margin-top: 1rem;
+}
+
+/* NOTAS INFORMATIVAS */
+
+.sa-consultas .sa-note {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--portal-muted, #536277);
+    margin-top: 1.2rem;
+}
+
+/* ==========================================================
+   ÁREAS DE LA EMPRESA
+   TARJETAS DE SUPERVISIÓN
+   ========================================================== */
+
+.sa-portal .sa-areas-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 22px;
+}
+
+/* TARJETA INDIVIDUAL */
+
+.sa-portal .sa-area-link {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 22px 24px;
+
+    background: #f8fafc;
+    border: 1px solid #dbe3eb;
+    border-radius: 12px;
+
+    color: #17212f;
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* TÍTULO DE CADA MÓDULO */
+
+.sa-portal .sa-area-link strong {
+    display: block;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #17212f;
+    text-decoration: none;
+}
+
+/* DESCRIPCIÓN DE CADA MÓDULO */
+
+.sa-portal .sa-area-link span {
+    display: block;
+    font-size: 14px;
+    line-height: 1.6;
+    font-weight: 400;
+    color: #536277;
+    text-decoration: none;
+}
+
+/* INTERACCIÓN */
+
+.sa-portal .sa-area-link:hover {
+    background: #fff7ed;
+    border-color: #b45309;
+    box-shadow: 0 4px 14px rgba(23, 33, 47, 0.07);
+    text-decoration: none;
+}
+
+.sa-portal .sa-area-link:hover strong {
+    color: #92400e;
+}
+
+.sa-portal .sa-area-link:focus-visible {
+    outline: 3px solid #b45309;
+    outline-offset: 3px;
+}
+
+/* ==========================================================
+   DISEÑO RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 700px) {
+    .sa-portal .sa-areas-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .sa-portal .sa-area-link {
+        padding: 18px;
+    }
+
+    .sa-portal .sa-area-link strong {
+        font-size: 16px;
+    }
+
+    .sa-portal .sa-area-link span {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 560px) {
+    .sa-consultas .sa-search label,
+    .sa-consultas .sa-search input {
+        width: 100%;
+    }
+}
+
+
+/* ÍCONOS DE LAS ÁREAS */
+
+.sa-area-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.sa-area-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #fff3e6;
+    border: 1px solid #f3dfc7;
+    border-radius: 10px;
+
+    color: #b45309;
+}
+
+.sa-area-icon svg {
+    width: 23px;
+    height: 23px;
+}
+
+/* ANIMACIÓN UNIFICADA DE LAS SECCIONES */
+
+@keyframes sa-section-enter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sa-portal .sa-panel,
+.sa-portal .sa-monitor,
+.sa-consultas .sa-panel {
+    animation: sa-section-enter 0.35s ease-out both;
+}
+
+/* INTERACCIÓN DE TARJETAS */
+
+.sa-portal .sa-area-link:hover {
+    transform: translateY(-2px);
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+/* ACCESIBILIDAD */
+
+@media (prefers-reduced-motion: reduce) {
+    .sa-portal .sa-panel,
+    .sa-portal .sa-monitor,
+    .sa-consultas .sa-panel {
+        animation: none;
+    }
+
+    .sa-portal .sa-area-link {
+        transition: none;
+    }
+}

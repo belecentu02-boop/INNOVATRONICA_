@@ -1,0 +1,17 @@
+/* Extensión institucional de Gestión de Empleados */
+.sa-manage-box{margin:1rem 0 1.4rem;border:1px solid #d6dee8;border-radius:10px;padding:1rem;background:#f8fafc}
+.sa-manage-box>summary{cursor:pointer;color:#a84b08;font-weight:700;font-size:1rem}
+.sa-manage-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.9rem;padding:1rem 0}
+.sa-manage-form label{display:flex;flex-direction:column;gap:.35rem;font-size:.88rem;font-weight:600;color:#17212f}
+.sa-manage-form input,.sa-manage-form select{width:100%;min-width:0;border:1px solid #cbd5e1;border-radius:8px;padding:.65rem;background:#fff;color:#17212f;font:inherit}
+.sa-manage-form p{grid-column:1/-1;font-size:.85rem;color:#53657d;margin:0}
+.sa-manage-form button{justify-self:start}
+.sa-manage-actions{display:flex;gap:.4rem;flex-wrap:wrap;align-items:flex-start}
+.sa-manage-inline{position:relative}
+.sa-manage-inline>summary{list-style:none;cursor:pointer;border:1px solid #d5dee8;border-radius:7px;background:#fff;padding:.5rem .65rem;font-size:.85rem;font-weight:600;color:#17212f}
+.sa-manage-inline>summary::-webkit-details-marker{display:none}
+.sa-manage-inline[open]{position:relative;z-index:3}
+.sa-manage-inline .sa-manage-form{position:absolute;right:0;top:calc(100% + 6px);width:min(340px,80vw);display:flex;flex-direction:column;background:white;border:1px solid #cbd5e1;border-radius:10px;padding:1rem;box-shadow:0 10px 30px #17212f22}
+.sa-manage-inline .sa-manage-form button{align-self:flex-start}
+.sa-personal-table td:last-child{min-width:245px}
+@media(max-width:700px){.sa-manage-form{grid-template-columns:1fr}.sa-manage-inline .sa-manage-form{right:auto;left:0;width:min(300px,75vw)}}

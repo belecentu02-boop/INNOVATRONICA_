@@ -52,6 +52,9 @@ require_once __DIR__ . '/includes/header.php';
 
 <link rel="stylesheet" href="assets/css/superadmin.css?v=<?= filemtime(__DIR__ . '/assets/css/superadmin.css') ?>">
 <link rel="stylesheet" href="assets/css/superadmin-legibilidad.css?v=1">
+<link rel="stylesheet" href="assets/css/superadmin-consultas.css?v=<?= (int)filemtime(__DIR__ . '/assets/css/superadmin-consultas.css') ?>">
+<link rel="stylesheet" href="assets/css/superadmin-monitor.css?v=1">
+<link rel="stylesheet" href="assets/css/superadmin-personal-avanzado.css?v=1">
 <script src="assets/js/superadmin-roles.js?v=1"></script>
 <main class="employee-portal sa-portal" id="main-content">
   <div class="portal-context"><span class="portal-context-line" aria-hidden="true"></span> INNOVATRÓNICA S.A. <span class="portal-context-separator">/</span> CENTRO DE CONTROL <span class="portal-context-separator">/</span> SUPERADMIN</div>
@@ -76,7 +79,105 @@ require_once __DIR__ . '/includes/header.php';
   <?php elseif ($section === 'personal'): ?>
   <?php require __DIR__ . '/superadmin_personal.php'; ?>
   <?php // El módulo de personal ya fue cargado antes de la cabecera. ?>
-  <?php else: ?><section class="sa-panel sa-placeholder"><span class="portal-eyebrow">MÓDULO EN PREPARACIÓN</span><h2><?= h($sections[$section]) ?></h2><p>Las funciones de esta sección todavía no están disponibles. Se implementarán con controles de autorización, protección CSRF y registro de auditoría.</p><a class="portal-primary-link" href="superadmin.php">Volver al resumen</a></section><?php endif; ?>
-  <p class="portal-access-note">Centro de Control · Acceso restringido a SUPERADMIN.</p>
+  <?php elseif ($section === 'auditoria'): ?>
+    <?php define('SA_PANEL_ALLOWED', true); require __DIR__ . '/superadmin_auditoria.php'; ?>
+  <?php elseif ($section === 'seguridad'): ?>
+    <?php define('SA_PANEL_ALLOWED', true); require __DIR__ . '/superadmin_seguridad.php'; ?>
+  <?php elseif ($section === 'operaciones'): ?>
+    <?php define('SA_PANEL_ALLOWED', true); require __DIR__ . '/superadmin_operaciones.php'; ?>
+  <?php else: ?>
+    <section class="sa-panel"><p>Sección no disponible.</p></section>
+  <?php endif; ?>
+  <!-- Agregar dentro de <main class="employee-portal sa-portal"> de superadmin.php,
+     inmediatamente ANTES de <p class="portal-access-note">.
+     Este bloque es visible en todas las pestañas y no cambia permisos operativos. -->
+<section class="sa-panel" aria-labelledby="sa-areas-titulo" style="margin-top:1.5rem">
+  <div class="sa-panel-head">
+    <div><span class="portal-eyebrow">SUPERVISIÓN GENERAL</span>
+    <h2 id="sa-areas-titulo">Áreas de la empresa</h2></div>
+    <span class="portal-future-status">Solo lectura</span>
+  </div>
+  <p class="sa-personal-note">Consultá la información operativa sin crear, editar, autorizar ni facturar.</p>
+  <div class="sa-areas-grid">
+    <?php foreach ([
+      ['stock','Stock y disponibilidad','Existencias físicas, comprometidas y disponibles'],
+      ['catalogo','Catálogo','Productos, categorías, ubicaciones y fichas técnicas'],
+      ['reservas','Reservas','Operaciones comerciales, vencimientos y estados'],
+      ['reabastecimiento','Reabastecimiento','Componentes con disponibilidad crítica'],
+      ['inventario','Movimientos de inventario','Ingresos, ajustes y facturación de stock']
+    ] as $area): ?>
+<a class="sa-area-link"
+   href="superadmin_consultas.php?modulo=<?= h($area[0]) ?>">
+
+    <div class="sa-area-header">
+
+        <span class="sa-area-icon" aria-hidden="true">
+            <?php
+            $iconos = [
+                'stock' => 'package',
+                'catalogo' => 'cpu',
+                'reservas' => 'clipboard',
+                'reabastecimiento' => 'alert',
+                'inventario' => 'warehouse'
+            ];
+
+            $icono = $iconos[$area[0]] ?? 'package';
+            ?>
+
+            <?php if ($icono === 'package'): ?>
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 3 9 5v8l-9 5-9-5V8l9-5Z"/>
+                    <path d="m3 8 9 5 9-5M12 13v8"/>
+                </svg>
+
+            <?php elseif ($icono === 'cpu'): ?>
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="5" width="14" height="14" rx="2"/>
+                    <rect x="9" y="9" width="6" height="6"/>
+                    <path d="M9 1v4M15 1v4M9 19v4M15 19v4
+                             M19 9h4M19 15h4M1 9h4M1 15h4"/>
+                </svg>
+
+            <?php elseif ($icono === 'clipboard'): ?>
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="4" width="14" height="18" rx="2"/>
+                    <path d="M9 4.5h6M9 11h6M9 15h6"/>
+                </svg>
+
+            <?php elseif ($icono === 'alert'): ?>
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m12 3 10 18H2L12 3Z"/>
+                    <path d="M12 9v5M12 18h.01"/>
+                </svg>
+
+            <?php elseif ($icono === 'warehouse'): ?>
+                <svg viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1.8"
+                     stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21V8l9-5 9 5v13"/>
+                    <path d="M3 10h18M8 21v-8h8v8"/>
+                </svg>
+            <?php endif; ?>
+        </span>
+
+        <strong><?= h($area[1]) ?></strong>
+    </div>
+
+    <span><?= h($area[2]) ?></span>
+</a>
+
+    <?php endforeach; ?>
+  </div>
+</section>
+
+    <p class="portal-access-note">Centro de Control · Acceso restringido a SUPERADMIN.</p>
 </main>
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
