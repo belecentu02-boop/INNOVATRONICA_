@@ -1,0 +1,26 @@
+/* Ajuste incremental: no reemplaza los estilos institucionales. */
+body.employee-portal-shell .employee-portal {font-size: 1rem;line-height:1.6;}
+body.employee-portal-shell .employee-portal .portal-context,
+body.employee-portal-shell .employee-portal .portal-eyebrow {font-size:.78rem;}
+body.employee-portal-shell .employee-portal h1 {font-size:clamp(2rem,3vw,2.8rem);}
+body.employee-portal-shell .employee-portal h2 {font-size:1.35rem;}
+body.employee-portal-shell .employee-portal h3 {font-size:1.12rem;}
+body.employee-portal-shell .employee-portal p,
+body.employee-portal-shell .employee-portal td,
+body.employee-portal-shell .employee-portal th,
+body.employee-portal-shell .employee-portal a,
+body.employee-portal-shell .employee-portal button,
+body.employee-portal-shell .employee-portal label {font-size: max(.94rem, 14px);}
+body.employee-portal-shell .employee-portal table {width:100%;}
+body.employee-portal-shell .employee-portal td,
+body.employee-portal-shell .employee-portal th {padding-top:1rem;padding-bottom:1rem;line-height:1.55;}
+body.employee-portal-shell .employee-portal small,
+body.employee-portal-shell .employee-portal time {font-size:.82rem;}
+body.employee-portal-shell .employee-portal .badge {font-size:.82rem;}
+.sa-role-pill {display:inline-flex;align-items:center;gap:.42rem;padding:.3rem .68rem;border-radius:999px;font-size:.83rem;font-weight:650;white-space:nowrap;border:1px solid transparent;line-height:1.3;}
+.sa-role-pill::before {content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none;}
+.sa-role-pill.badge-admin {background:var(--role-admin-bg,#fef3c7);color:var(--role-admin-color,#92400e);border-color:var(--role-admin-border,#fcd34d);}
+.sa-role-pill.badge-supervisor {background:var(--role-supervisor-bg,#e0e7ff);color:var(--role-supervisor-color,#3730a3);border-color:var(--role-supervisor-border,#c7d2fe);}
+.sa-role-pill.badge-vendedor {background:var(--role-vendedor-bg,#dcfce7);color:var(--role-vendedor-color,#166534);border-color:var(--role-vendedor-border,#bbf7d0);}
+.sa-role-pill.badge-superadmin {background:#f3e8ff;color:#6b21a8;border-color:#d8b4fe;}
+@media(max-width:768px){body.employee-portal-shell .employee-portal td,body.employee-portal-shell .employee-portal th{font-size:.9rem;}body.employee-portal-shell .employee-portal table{min-width:660px;}body.employee-portal-shell .employee-portal table{display:block;overflow-x:auto;}}

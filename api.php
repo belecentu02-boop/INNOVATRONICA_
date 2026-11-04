@@ -147,6 +147,7 @@ try {
                     DATE_FORMAT(creado_en, '%d/%m/%Y %H:%i') AS creado_en,
                     DATE_FORMAT(actualizado_en, '%d/%m/%Y %H:%i') AS actualizado_en
                 FROM usuarios 
+                WHERE rol <> 'SUPERADMIN'
                 ORDER BY id_empleado ASC
             ");
             $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -312,6 +313,17 @@ try {
                 exit;
             }
 
+            // Protección de cuentas SUPERADMIN.
+            // Un administrador convencional no puede editar estas cuentas.
+            if ($userTarget['rol'] === 'SUPERADMIN' && !es_superadmin()) {
+                http_response_code(403);
+                echo json_encode([
+                    'ok' => false,
+                    'error' => 'No tienes autorización para editar esta cuenta.'
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
             // Regla de seguridad (decisiones.md secc. 15):
             // El Admin no puede desactivarse a sí mismo ni cambiar su propio rol.
             if ($id_empleado === $current_admin_id) {
@@ -388,13 +400,28 @@ try {
                 exit;
             }
 
-            $stUser = $pdo->prepare('SELECT id_empleado, codigo_empleado, usuario, activo FROM usuarios WHERE id_empleado = ?');
+            $stUser = $pdo->prepare('SELECT id_empleado, codigo_empleado, usuario, activo, rol FROM usuarios WHERE id_empleado = ?');
             $stUser->execute([$id_empleado]);
             $u = $stUser->fetch(PDO::FETCH_ASSOC);
-
-            if (!$u) {
+            
+            
+             if (!$u) {
                 http_response_code(404);
-                echo json_encode(['ok' => false, 'error' => 'Empleado no encontrado.'], JSON_UNESCAPED_UNICODE);
+                echo json_encode([
+                    'ok' => false,
+                    'error' => 'Empleado no encontrado.'
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            // Protección de cuentas SUPERADMIN.
+            // Ningún administrador convencional puede modificar su estado.
+            if ($u['rol'] === 'SUPERADMIN' && !es_superadmin()) {
+                http_response_code(403);
+                echo json_encode([
+                    'ok' => false,
+                    'error' => 'No tienes autorización para modificar esta cuenta.'
+                ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
 
@@ -445,7 +472,7 @@ try {
                 exit;
             }
 
-            $stUser = $pdo->prepare('SELECT id_empleado, codigo_empleado, usuario FROM usuarios WHERE id_empleado = ?');
+            $stUser = $pdo->prepare('SELECT id_empleado, codigo_empleado, usuario, rol FROM usuarios WHERE id_empleado = ?');
             $stUser->execute([$id_empleado]);
             $u = $stUser->fetch(PDO::FETCH_ASSOC);
 
@@ -455,7 +482,17 @@ try {
                 exit;
             }
 
-            $nuevo_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
+            // Protección de contraseñas SUPERADMIN.
+            // Los administradores convencionales no pueden restablecerlas.
+            if ($u['rol'] === 'SUPERADMIN' && !es_superadmin()) {
+                http_response_code(403);
+                echo json_encode([
+                    'ok' => false,
+                    'error' => 'No tienes autorización para restablecer la contraseña de esta cuenta.'
+                ], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+             $nuevo_hash = password_hash($nueva_password, PASSWORD_DEFAULT);
 
             // Al resetear la contraseña, marcar cambio obligatorio (debe_cambiar_password = 1), desbloquear y reiniciar intentos fallidos
             $stUpd = $pdo->prepare('

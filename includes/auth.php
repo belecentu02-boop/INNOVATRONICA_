@@ -85,6 +85,13 @@ function es_admin(): bool {
 }
 
 /**
+ * Comprobar si el usuario actual es Superadministrador.
+ */
+function es_superadmin(): bool {
+    return ($_SESSION['u']['rol'] ?? '') === 'SUPERADMIN';
+}
+
+/**
  * Comprobar si el usuario actual tiene rol de Supervisor Comercial.
  */
 function es_supervisor(): bool {
@@ -104,21 +111,21 @@ function es_vendedor(): bool {
 function rol_badge_class(?string $rol = null): string {
     $r = $rol ?? ($_SESSION['u']['rol'] ?? '');
     switch ($r) {
+        case 'SUPERADMIN': return 'badge-superadmin';
         case 'ADMIN': return 'badge-admin';
         case 'SUPERVISOR_COMERCIAL': return 'badge-supervisor';
         default: return 'badge-vendedor';
     }
 }
 
-/**
- * Obtener la etiqueta legible correspondiente al rol.
- */
 function rol_label(?string $rol = null): string {
     $r = $rol ?? ($_SESSION['u']['rol'] ?? '');
     switch ($r) {
+        case 'SUPERADMIN': return 'Superadministrador';
         case 'ADMIN': return 'Administrador General';
         case 'SUPERVISOR_COMERCIAL': return 'Supervisor Comercial';
-        default: return 'Vendedor Interno';
+        case 'VENDEDOR_INTERNO': return 'Vendedor Interno';
+        default: return 'Rol desconocido';
     }
 }
 

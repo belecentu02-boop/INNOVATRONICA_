@@ -112,8 +112,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             // Limpiar caché estática del estado en memoria
                             obtener_estado_usuario_db(true);
 
-                            // Redireccionar al dashboard con notificación de confirmación
-                            header('Location: index.php?msg=password_actualizada');
+                            // Volver al portal con notificación de confirmación
+                            $destino = es_superadmin()
+                              ? 'superadmin.php'
+                              : 'portal.php';
+
+                          header('Location: ' . $destino . '?msg=password_actualizada');
                             exit;
                         }
                     }
@@ -456,3 +460,4 @@ body:has(.password-page) .app-header :is(a, button):focus-visible {
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+
